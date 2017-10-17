@@ -40,7 +40,7 @@ namespace Bio.VCF
 			this.Header = header;
 		}
         
-        public VCFParser(string fileName) :this(new FileInfo(fileName))
+        public VCFParser(string fileName) : this(new FileInfo(fileName))
         {}
 
 		public void Close()
@@ -51,6 +51,7 @@ namespace Bio.VCF
 		{
 			get; private set;
 		}
+
         #region IDisposable Members
         // Track whether Dispose has been called. 
         private bool disposed = false;
