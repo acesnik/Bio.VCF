@@ -100,8 +100,9 @@ namespace Bio.VCF
 		public const string MISSING_DEPTH_v3 = "-1";
 		public const string UNBOUNDED_ENCODING_v4 = ".";
 		public const string UNBOUNDED_ENCODING_v3 = "-1";
-		public const string PER_ALLELE_COUNT = "A";
-		public const string PER_GENOTYPE_COUNT = "G";
+        public const string PER_ALTERNATE_ALLELE_COUNT = "A";
+        public const string PER_ALLELE_COUNT = "R";
+        public const string PER_GENOTYPE_COUNT = "G";
 		public const string EMPTY_ALLELE = ".";
 		public const string EMPTY_GENOTYPE = "./.";
 		public const int MAX_GENOTYPE_QUAL = 99;

@@ -1,40 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Bio.VCF
 {
     public class ImmutableHashSet<T> : IEnumerable<T>,ISet<T>
     {
         HashSet<T> _set=new HashSet<T>();
+
         const string EXCEPTION="Attempt to modify ImmutableHashSetClass";
+
+        #region Public Constructors
+
         public ImmutableHashSet()
         {
+
         }
-        public ImmutableHashSet(IEnumerable<T> toAdd,bool isReadOnly=false)
+
+        public ImmutableHashSet(IEnumerable<T> toAdd, bool isReadOnly = false)
         {
-            foreach(var v in toAdd)
+            foreach (var v in toAdd)
             {
                 _set.Add(v);
             }
-        }        
+        }
+
+        #endregion Public Constructors
+
         public bool Add(T item)
         {
-                throw new Exception(EXCEPTION);
+            throw new Exception(EXCEPTION);
         }
+
         public void AddRange(IEnumerable<T> items)
         {
-                throw new Exception(EXCEPTION);
+            throw new Exception(EXCEPTION);
         }
 
         public void ExceptWith(IEnumerable<T> other)
         {
-                throw new Exception(EXCEPTION);
+            throw new Exception(EXCEPTION);
         }
 
         public void IntersectWith(IEnumerable<T> other)
-        {throw new Exception(EXCEPTION);}
+        {
+            throw new Exception(EXCEPTION);
+        }
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
@@ -67,18 +77,25 @@ namespace Bio.VCF
         }
 
         public void SymmetricExceptWith(IEnumerable<T> other)
-        {throw new Exception(EXCEPTION);}
+        {
+            throw new Exception(EXCEPTION);
+        }
 
 
         public void UnionWith(IEnumerable<T> other)
-        {throw new Exception(EXCEPTION);}
+        {
+            throw new Exception(EXCEPTION);
+        }
 
         void ICollection<T>.Add(T item)
-        {throw new Exception(EXCEPTION);}
-
+        {
+            throw new Exception(EXCEPTION);
+        }
 
         public void Clear()
-        { throw new Exception(EXCEPTION); }
+        {
+            throw new Exception(EXCEPTION);
+        }
 
         public bool Contains(T item)
         {
@@ -100,11 +117,15 @@ namespace Bio.VCF
             
         }
         public bool Remove(T item)
-       {throw new Exception(EXCEPTION);}
+        {
+            throw new Exception(EXCEPTION);
+        }
 
         
         public void RemoveRange(IEnumerable<T> items)
-        { throw new Exception(EXCEPTION); }
+        {
+            throw new Exception(EXCEPTION);
+        }
 
 
         public IEnumerator<T> GetEnumerator()

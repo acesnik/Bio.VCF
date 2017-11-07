@@ -48,7 +48,7 @@ namespace Bio.VCF
 		public const string VCF4_MAGIC_HEADER = "##fileformat=VCFv4";
 
 		public VCFCodec ()
-            : base ("VCFv4", VCFHeaderVersion.VCF4_0, VCFHeaderVersion.VCF4_1)
+            : base ("VCFv4", VCFHeaderVersion.VCF4_0, VCFHeaderVersion.VCF4_1, VCFHeaderVersion.VCF4_2)
 		{
 		}
 

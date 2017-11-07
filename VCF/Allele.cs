@@ -497,13 +497,13 @@ namespace Bio.VCF
 		/// <param name="other">  the other allele
 		/// </param>
 		/// <returns> true if these alleles are equal </returns>
-		public bool Equals(object other)
+		public override bool Equals(object other)
 		{
 			return (!(other is Allele) ? false : Equals((Allele)other, false));
 		}
 
 		/// <returns> hash code </returns>
-		public int GetHashCode()
+		public override int GetHashCode()
 		{
 			int hash = 1;
 			for (int i = 0; i < bases.Length; i++)

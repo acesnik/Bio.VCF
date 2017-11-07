@@ -14,8 +14,9 @@ namespace Bio.VCF
 		{
 			mapping = new Dictionary<VCFHeaderVersion, VCFLineParser>();
 			mapping[VCFHeaderVersion.VCF4_0] = new VCF4Parser();
-			mapping[VCFHeaderVersion.VCF4_1] = new VCF4Parser();
-			mapping[VCFHeaderVersion.VCF3_3] = new VCF3Parser();
+            mapping[VCFHeaderVersion.VCF4_1] = new VCF4Parser();
+            mapping[VCFHeaderVersion.VCF4_2] = new VCF4Parser();
+            mapping[VCFHeaderVersion.VCF3_3] = new VCF3Parser();
 			mapping[VCFHeaderVersion.VCF3_2] = new VCF3Parser();
 		}
 

@@ -92,7 +92,9 @@ namespace Bio.VCF
 					return -1;
 				case Bio.VCF.VCFHeaderLineCount.A:
 					return vc.NAlleles - 1;
-				case Bio.VCF.VCFHeaderLineCount.G:
+                case Bio.VCF.VCFHeaderLineCount.R:
+                    return vc.NAlleles;
+                case Bio.VCF.VCFHeaderLineCount.G:
 					int ploidy = vc.GetMaxPloidy(2);
 					return GenotypeLikelihoods.numLikelihoods(vc.NAlleles, ploidy);
 				default:
@@ -159,15 +161,19 @@ namespace Bio.VCF
 			name = mapping["ID"];
 			count = -1;
 			string numberStr = mapping["Number"];
-			if (numberStr.Equals(VCFConstants.PER_ALLELE_COUNT))
+			if (numberStr.Equals(VCFConstants.PER_ALTERNATE_ALLELE_COUNT))
 			{
 				countType = VCFHeaderLineCount.A;
 			}
-			else if (numberStr.Equals(VCFConstants.PER_GENOTYPE_COUNT))
+            else if (numberStr.Equals(VCFConstants.PER_ALLELE_COUNT))
+            {
+                countType = VCFHeaderLineCount.R;
+            }
+            else if (numberStr.Equals(VCFConstants.PER_GENOTYPE_COUNT))
 			{
 				countType = VCFHeaderLineCount.G;
 			}
-			else if (((version == VCFHeaderVersion.VCF4_0 || version == VCFHeaderVersion.VCF4_1) && numberStr.Equals(VCFConstants.UNBOUNDED_ENCODING_v4)) || ((version == VCFHeaderVersion.VCF3_2 || version == VCFHeaderVersion.VCF3_3) && numberStr.Equals(VCFConstants.UNBOUNDED_ENCODING_v3)))
+			else if (((version == VCFHeaderVersion.VCF4_0 || version == VCFHeaderVersion.VCF4_1 || version == VCFHeaderVersion.VCF4_2) && numberStr.Equals(VCFConstants.UNBOUNDED_ENCODING_v4)) || ((version == VCFHeaderVersion.VCF3_2 || version == VCFHeaderVersion.VCF3_3) && numberStr.Equals(VCFConstants.UNBOUNDED_ENCODING_v3)))
 			{
 				countType = VCFHeaderLineCount.UNBOUNDED;
 			}
@@ -236,9 +242,12 @@ namespace Bio.VCF
 			switch (countType)
 			{
 				case Bio.VCF.VCFHeaderLineCount.A:
-					number = VCFConstants.PER_ALLELE_COUNT;
+					number = VCFConstants.PER_ALTERNATE_ALLELE_COUNT;
 					break;
-				case Bio.VCF.VCFHeaderLineCount.G:
+                case Bio.VCF.VCFHeaderLineCount.R:
+                    number = VCFConstants.PER_ALLELE_COUNT;
+                    break;
+                case Bio.VCF.VCFHeaderLineCount.G:
 					number = VCFConstants.PER_GENOTYPE_COUNT;
 					break;
 				case Bio.VCF.VCFHeaderLineCount.UNBOUNDED:

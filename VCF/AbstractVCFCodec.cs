@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Collections;
 using System.IO;
 using System.IO.Compression;
-using Bio.VCF.NewCollections;
+using System.Linq;
 
 namespace Bio.VCF
 {
-	//A note on bgzf compressed input streams.  This seems to be a rare case, but according to the
-	//sam tools documentation bgzf can be decompressed like gzip files directly.  As such there should
-	//be no need for an additional decompressing stream, but will need to test this assumption with
-	//later tests, as all things *nix seem to suffer from cryptic binary incompatibilities.
-	//using BlockCompressedInputStream = net.sf.samtools.util.BlockCompressedInputStream;
-	public abstract class AbstractVCFCodec
+    //A note on bgzf compressed input streams.  This seems to be a rare case, but according to the
+    //sam tools documentation bgzf can be decompressed like gzip files directly.  As such there should
+    //be no need for an additional decompressing stream, but will need to test this assumption with
+    //later tests, as all things *nix seem to suffer from cryptic binary incompatibilities.
+    //using BlockCompressedInputStream = net.sf.samtools.util.BlockCompressedInputStream;
+    public abstract class AbstractVCFCodec
 	{
 		public static readonly int MAX_ALLELE_SIZE_BEFORE_WARNING = (int)Math.Pow (2, 20);
 		//TODO: This seems like it should be replaced with HEADERFIELDS.Length

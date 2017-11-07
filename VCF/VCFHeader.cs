@@ -77,6 +77,7 @@ namespace Bio.VCF
         public const string INTERVAL_MERGING_KEY = "interval_merging";
         public const string INTERVAL_SET_RULE_KEY = "interval_set_rule";
         public const string INTERVAL_PADDING_KEY = "interval_padding";
+
         #endregion
 
         // the associated meta data

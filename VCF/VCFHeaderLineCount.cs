@@ -9,6 +9,7 @@ namespace Bio.VCF
 	{
 		INTEGER,
 		A,
+        R,
 		G,
 		UNBOUNDED
 	}

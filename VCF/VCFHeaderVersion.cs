@@ -40,7 +40,8 @@ namespace Bio.VCF
 		public static readonly VCFHeaderVersion VCF3_3=new VCFHeaderVersion("VCFv3.3","fileformat");
 		public static readonly VCFHeaderVersion VCF4_0=new VCFHeaderVersion("VCFv4.0","fileformat");
         public static readonly VCFHeaderVersion VCF4_1 = new VCFHeaderVersion("VCFv4.1", "fileformat");
-        public static VCFHeaderVersion[] PossibleVersions=new VCFHeaderVersion[] {VCF3_2,VCF3_3,VCF4_0,VCF4_1};
+        public static readonly VCFHeaderVersion VCF4_2 = new VCFHeaderVersion("VCFv4.2", "fileformat");
+        public static VCFHeaderVersion[] PossibleVersions=new VCFHeaderVersion[] {VCF3_2,VCF3_3,VCF4_0,VCF4_1,VCF4_2};
 		
         public String VersionString {get;private set;}
         public String FormatString { get; private set; }
