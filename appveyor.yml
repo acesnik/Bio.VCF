@@ -17,7 +17,7 @@ build_script:
 
     msbuild "C:\projects\bio-vcf\Bio.VCF.sln" /verbosity:normal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:Configuration=Release
 
-
+    nuget spec "C:\projects\bio-vcf\Bio.VCF.sln"
     nuget pack "C:\projects\bio-vcf\Bio.VCF.nuspec" -IncludeReferencedProjects
 test: off
 artifacts:
