@@ -1,0 +1,5 @@
+deploy:
+  provider: NuGet
+  api_key:
+    secure: EeXskWMEvVt613pU0SEYa9J5qJRwsDG+2A0y6FmxmCk=
+    
