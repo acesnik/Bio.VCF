@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Bio.VCF</id>
+    <id>Bio.VCF.ajc</id>
     <version>0.0.1</version>
-    <title>Bio.VCF</title>
+    <title>Bio.VCF.ajc</title>
     <authors>evolvedmicrobe</authors>
     <owners>evolvedmicrobe</owners>
     <projectUrl>https://github.com/acesnik/Bio.VCF</projectUrl>

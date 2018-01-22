@@ -59,9 +59,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Bio.VCF.csproj">
+    <ProjectReference Include="..\Bio.VCF.ajc.csproj">
       <Project>{F7213ADD-1C0C-434F-9A32-7F6C31671A89}</Project>
-      <Name>Bio.VCF</Name>
+      <Name>Bio.VCF.ajc</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bio.VCF", "Bio.VCF.csproj", "{F7213ADD-1C0C-434F-9A32-7F6C31671A89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bio.VCF.ajc", "Bio.VCF.ajc.csproj", "{F7213ADD-1C0C-434F-9A32-7F6C31671A89}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VCFComparison", "TestVCF\VCFComparison.csproj", "{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}"
 EndProject
@@ -14,24 +14,27 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Mono|Any CPU.ActiveCfg = Release|Any CPU
-		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Mono|Any CPU.Build.0 = Release|Any CPU
-		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F7213ADD-1C0C-434F-9A32-7F6C31671A89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F7213ADD-1C0C-434F-9A32-7F6C31671A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7213ADD-1C0C-434F-9A32-7F6C31671A89}.Mono|Any CPU.ActiveCfg = Mono|Any CPU
 		{F7213ADD-1C0C-434F-9A32-7F6C31671A89}.Mono|Any CPU.Build.0 = Mono|Any CPU
 		{F7213ADD-1C0C-434F-9A32-7F6C31671A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7213ADD-1C0C-434F-9A32-7F6C31671A89}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = TestVCF\VCFComparison.csproj
+		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {84F8EAC7-C46C-4F1D-87CF-103BC4BA1504}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = TestVCF\VCFComparison.csproj
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
