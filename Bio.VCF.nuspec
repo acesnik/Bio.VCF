@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Bio.VCF</id>
+    <version>0.0.1</version>
+    <title>Bio.VCF</title>
+    <authors>evolvedmicrobe</authors>
+    <owners>evolvedmicrobe</owners>
+    <projectUrl>https://github.com/acesnik/Bio.VCF</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A CSharp Parser for VCF Files</description>
+  </metadata>
+</package>
