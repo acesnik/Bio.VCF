@@ -47,9 +47,9 @@ namespace Bio.VCF
                 return count == 0 ? new string[0] : new String[1] { toSeperate};
             }
             return SplitByCharacters(toSeperate, separator, count, options != 0);
-        }    
-       
-        private static unsafe string[] SplitByCharacters(string toSep,char sep, int count, bool removeEmpty)
+        }
+
+        private static unsafe string[] SplitByCharacters(string toSep, char sep, int count, bool removeEmpty)
         {
             int[] split_points = null;
             int total_points = 0;

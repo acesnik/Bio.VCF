@@ -71,7 +71,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Bio.VCF.ajc\Bio.VCF.ajc.csproj">
+    <ProjectReference Include="..\Bio.VCF.ajc.csproj">
       <Project>{66f3f88e-3113-45a0-b98e-d1fa8940f207}</Project>
       <Name>Bio.VCF.ajc</Name>
     </ProjectReference>
