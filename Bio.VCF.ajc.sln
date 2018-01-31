@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VCFComparison", "TestVCF\VCFComparison.csproj", "{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestVCF", "TestVCF\TestVCF.csproj", "{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bio.VCF.ajc", "Bio.VCF.ajc.csproj", "{66F3F88E-3113-45A0-B98E-D1FA8940F207}"
 EndProject

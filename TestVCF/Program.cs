@@ -11,14 +11,14 @@ namespace TestVCF
 		static void Main (string[] args)
 		{
 			fname = "testData/NA12878.knowledgebase.snapshot.20131119.b37.vcf.gz";
-			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch ();
+			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 			sw.Start ();
-			VCFParser vcp = new VCFParser (fname);
+			VCFParser vcp = new VCFParser(fname);
 			var j = vcp.First ();
 			var ii = j.Genotypes;
-			var i = vcp.Select (x => x.NoCallCount).Count ();
+			var i = vcp.Select (x => x.NoCallCount).Count();
 			sw.Stop ();
-			Console.WriteLine (sw.Elapsed.ToString ());
+			Console.WriteLine(sw.Elapsed.ToString());
 		}
 	}
 }
