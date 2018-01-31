@@ -23,18 +23,16 @@
 * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Bio.VCF
 {
 
-	
-	/// <summary>
-	/// information that identifies each header version
-	/// </summary>
-	public class VCFHeaderVersion
+
+    /// <summary>
+    /// information that identifies each header version
+    /// </summary>
+    public class VCFHeaderVersion
 	{
 		public static readonly VCFHeaderVersion VCF3_2=new VCFHeaderVersion("VCRv3.2","format");
 		public static readonly VCFHeaderVersion VCF3_3=new VCFHeaderVersion("VCFv3.3","fileformat");

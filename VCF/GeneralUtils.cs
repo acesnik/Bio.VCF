@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-
 
 namespace Bio.VCF
 {
 
 
-	/// <summary>
-	/// Constants and utility methods used throughout the VCF/BCF/VariantContext classes
-	/// </summary>
-	public class GeneralUtils
+    /// <summary>
+    /// Constants and utility methods used throughout the VCF/BCF/VariantContext classes
+    /// </summary>
+    public class GeneralUtils
 	{
 
 		/// <summary>

@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-
-
+using System.Text;
 
 namespace Bio.VCF
 {
-	public class GenotypeLikelihoods
+    public class GenotypeLikelihoods
 	{
 		private const int NUM_LIKELIHOODS_CACHE_N_ALLELES = 5;
 		private const int NUM_LIKELIHOODS_CACHE_PLOIDY = 10;

@@ -1,15 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace Bio.VCF
 {
-	/// <summary>
-	/// TODO: This class is pure java nonsense, remove and replace with standard framework calls later...
-	/// </summary>
-	public class ParsingUtils
+    /// <summary>
+    /// TODO: This class is pure java nonsense, remove and replace with standard framework calls later...
+    /// </summary>
+    public class ParsingUtils
 	{
 		/// <summary>
 		/// Split the string into tokesn separated by the given delimiter.  Profiling has

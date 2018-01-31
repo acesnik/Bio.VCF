@@ -1,17 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Bio.VCF
 {
-    
-	/// <summary>
-	/// This class writes VCF files
-	/// </summary>
-	public class VCFWriter
+
+    /// <summary>
+    /// This class writes VCF files
+    /// </summary>
+    public class VCFWriter
     {
         #region Statics and constants
 

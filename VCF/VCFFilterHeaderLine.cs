@@ -1,14 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 namespace Bio.VCF
 {
-	/// <summary>
-	///
-	/// A class representing a key=value entry for FILTER fields in the VCF header
-	/// </summary>
-	public class VCFFilterHeaderLine : VCFSimpleHeaderLine
+    /// <summary>
+    ///
+    /// A class representing a key=value entry for FILTER fields in the VCF header
+    /// </summary>
+    public class VCFFilterHeaderLine : VCFSimpleHeaderLine
 	{
 
 		/// <summary>

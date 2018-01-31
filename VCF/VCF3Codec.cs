@@ -1,24 +1,22 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Bio.VCF
 {
-	/// <summary>
-	/// A feature codec for the VCF3 specification, to read older VCF files.  VCF3 has been
-	/// depreciated in favor of VCF4 (See VCF codec for the latest information)
-	/// 
-	/// <p>
-	/// Reads historical VCF3 encoded files (1000 Genomes Pilot results, for example)
-	/// </p>
-	/// 
-	/// <p> </summary>
-	/// See also: <seealso cref= <a href="http://vcftools.sourceforge.net/specs.html">VCF specification</a><br> </seealso>
-	/// See also: <seealso cref= <a href="http://www.ncbi.nlm.nih.gov/pubmed/21653522">VCF spec. publication</a>
-	/// </p>
-	/// 
-	public class VCF3Codec : AbstractVCFCodec
+    /// <summary>
+    /// A feature codec for the VCF3 specification, to read older VCF files.  VCF3 has been
+    /// depreciated in favor of VCF4 (See VCF codec for the latest information)
+    /// 
+    /// <p>
+    /// Reads historical VCF3 encoded files (1000 Genomes Pilot results, for example)
+    /// </p>
+    /// 
+    /// <p> </summary>
+    /// See also: <seealso cref= <a href="http://vcftools.sourceforge.net/specs.html">VCF specification</a><br> </seealso>
+    /// See also: <seealso cref= <a href="http://www.ncbi.nlm.nih.gov/pubmed/21653522">VCF spec. publication</a>
+    /// </p>
+    /// 
+    public class VCF3Codec : AbstractVCFCodec
 	{
 		public VCF3Codec () : base ("VCFv3", VCFHeaderVersion.VCF3_2, VCFHeaderVersion.VCF3_3)
 		{

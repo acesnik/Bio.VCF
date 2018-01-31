@@ -1,35 +1,32 @@
 using System.Collections.Generic;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Bio.VCF
 {
-	/// <summary>
-	/// Builder class for VariantContext
-	/// 
-	/// Some basic assumptions here:
-	/// 
-	/// 1 -- data isn't protectively copied.  If you provide an attribute map to
-	/// the build, and modify it later, the builder will see this and so will any
-	/// resulting variant contexts.  It's best not to modify collections provided
-	/// to a builder.
-	/// 
-	/// 2 -- the system uses the standard builder model, allowing the simple construction idiom:
-	/// 
-	///   builder.source("a").genotypes(gc).id("x").make() => VariantContext
-	/// 
-	/// 3 -- The best way to copy a VariantContext is:
-	/// 
-	///   new VariantContextBuilder(vc).make() => a copy of VC
-	/// 
-	/// 4 -- validation of arguments is done at the during the final make() call, so a
-	/// VariantContextBuilder can exist in an inconsistent state as long as those issues
-	/// are resolved before the call to make() is issued.
-	/// 
-	/// @author depristo
-	/// </summary>
-	public class VariantContextBuilder
+    /// <summary>
+    /// Builder class for VariantContext
+    /// 
+    /// Some basic assumptions here:
+    /// 
+    /// 1 -- data isn't protectively copied.  If you provide an attribute map to
+    /// the build, and modify it later, the builder will see this and so will any
+    /// resulting variant contexts.  It's best not to modify collections provided
+    /// to a builder.
+    /// 
+    /// 2 -- the system uses the standard builder model, allowing the simple construction idiom:
+    /// 
+    ///   builder.source("a").genotypes(gc).id("x").make() => VariantContext
+    /// 
+    /// 3 -- The best way to copy a VariantContext is:
+    /// 
+    ///   new VariantContextBuilder(vc).make() => a copy of VC
+    /// 
+    /// 4 -- validation of arguments is done at the during the final make() call, so a
+    /// VariantContextBuilder can exist in an inconsistent state as long as those issues
+    /// are resolved before the call to make() is issued.
+    /// 
+    /// @author depristo
+    /// </summary>
+    public class VariantContextBuilder
 	{
 		/// <summary>
 		/// An alias as well for chromosome

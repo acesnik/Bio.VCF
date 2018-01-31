@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PicardSharp.PicardSharp.org.broadinstitute.variant.vcf
 {
@@ -12,6 +11,7 @@ namespace PicardSharp.PicardSharp.org.broadinstitute.variant.vcf
         {
             
         }
+
         public bool Add(T item)
         {
             throw new Exception("Tried to modify read only collection");
@@ -76,7 +76,6 @@ namespace PicardSharp.PicardSharp.org.broadinstitute.variant.vcf
         public void Clear()
         {
             throw new Exception("Tried to modify read only collection");
-        
         }
 
         public bool Contains(T item)
@@ -109,7 +108,7 @@ namespace PicardSharp.PicardSharp.org.broadinstitute.variant.vcf
             return _set.GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return _set.GetEnumerator();
         }

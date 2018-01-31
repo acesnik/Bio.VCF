@@ -1,9 +1,8 @@
 using System;
 
-
 namespace Bio.VCF
 {
-	public sealed class VCFConstants
+    public sealed class VCFConstants
 	{		
 		// reserved INFO/FORMAT field keys
 		public const string ANCESTRAL_ALLELE_KEY = "AA";

@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-
-
-
 namespace Bio.VCF
 {
 
-	public static class VCFUtils
+    public static class VCFUtils
 	{
         /// <summary>
         /// Returns a string as bytes, also useful as 

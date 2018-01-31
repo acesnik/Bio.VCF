@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Bio.VCF
 {
-	public class VariantContextUtils
+    public class VariantContextUtils
 	{
 		private static ISet<string> MISSING_KEYS_WARNED_ABOUT = new HashSet<string> ();
 		private const bool ASSUME_MISSING_FIELDS_ARE_STRINGS = false;

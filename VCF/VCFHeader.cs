@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
 
 /*
 * Copyright (c) 2012 The Broad Institute
@@ -30,24 +30,24 @@ using System.Collections.ObjectModel;
 */
 
 namespace Bio.VCF
-{	
-	/// <summary>
-	/// This class is really a POS.  It allows duplicate entries in the metadata,
-	/// stores header lines in lots of places, and all around f*cking sucks.
-	/// 
-	/// todo -- clean this POS up
+{
+    /// <summary>
+    /// This class is really a POS.  It allows duplicate entries in the metadata,
+    /// stores header lines in lots of places, and all around f*cking sucks.
+    /// 
+    /// todo -- clean this POS up
     /// 
     /// TODO: Nigel comment, doesn't look so bad anymore, mostly the caching might be unnecessary
     /// See if it is useful to cache the different types of header lines in different lists, or better to 
     /// just query for each type and have one central collection of all header lines in mMetaData
-	/// 
-	/// @author aaron
-	///         <p/>
-	///         Class VCFHeader
-	///         <p/>
-	///         A class representing the VCF header
-	/// </summary>
-	public class VCFHeader
+    /// 
+    /// @author aaron
+    ///         <p/>
+    ///         Class VCFHeader
+    ///         <p/>
+    ///         A class representing the VCF header
+    /// </summary>
+    public class VCFHeader
     {
         #region Static Members
 

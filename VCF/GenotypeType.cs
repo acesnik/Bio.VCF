@@ -1,4 +1,3 @@
-
 namespace Bio.VCF
 {
 
@@ -26,7 +25,5 @@ namespace Bio.VCF
 		/// <summary>
 		/// Some chromosomes are NO_CALL and others are called </summary>
 		MIXED=5 // no-call and call in the same genotype
-
 	}
-
 }

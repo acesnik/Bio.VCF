@@ -1,17 +1,16 @@
-using System.IO;
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 
 namespace Bio.VCF
 {
-	
+
     /// <summary>
     /// A Class to parse VCF Files
     /// </summary>
-	public class VCFParser : IDisposable, IEnumerable<VariantContext>, IEnumerator<VariantContext>
+    public class VCFParser : IDisposable, IEnumerable<VariantContext>, IEnumerator<VariantContext>
 	{
 		private readonly VCFCodec vcfCodec = new VCFCodec();
 		private readonly StreamReader reader;

@@ -1,12 +1,4 @@
-﻿using System.Text;
-using System.Collections;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-using System;
-using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
-using System.Runtime.InteropServices;
-
+﻿using System;
 
 namespace Bio.VCF
 {
@@ -30,7 +22,7 @@ namespace Bio.VCF
             {
                 outputArray[0] = toSeparate;
             }
-             SplitByCharacters(toSeparate,outputArray, separator);
+            SplitByCharacters(toSeparate,outputArray, separator);
         }    
         public static String[] Split(string toSeperate, char separator, int count, StringSplitOptions options)
         {
@@ -56,32 +48,32 @@ namespace Bio.VCF
             --count;
             int Length=toSep.Length;
           
-                fixed (char* src = toSep)
-                {                    
-                        char* src_ptr = src;
-                        //char* sep_ptr_end = sep_src + sep.Length;
-                        int len = toSep.Length;
-                        while (len > 0)
+            fixed (char* src = toSep)
+            {                    
+                char* src_ptr = src;
+                //char* sep_ptr_end = sep_src + sep.Length;
+                int len = toSep.Length;
+                while (len > 0)
+                {
+                    if (sep == *src_ptr)
+                    {
+                        if (split_points == null)
                         {
-                                if (sep == *src_ptr)
-                                {
-                                    if (split_points == null)
-                                    {
-                                        split_points = new int[8];
-                                    }
-                                    else if (split_points.Length == total_points)
-                                    {
-                                        Array.Resize(ref split_points, split_points.Length * 2);
-                                    }
+                            split_points = new int[8];
+                        }
+                        else if (split_points.Length == total_points)
+                        {
+                            Array.Resize(ref split_points, split_points.Length * 2);
+                        }
 
-                                    split_points[total_points++] = Length - len;
-                                    if (total_points == count && !removeEmpty)
-                                        len = 0;                                   
-                                }
-                            ++src_ptr;
-                            --len;
-                        }                    
-                }          
+                        split_points[total_points++] = Length - len;
+                        if (total_points == count && !removeEmpty)
+                            len = 0;                                   
+                    }
+                    ++src_ptr;
+                    --len;
+                }                    
+            }          
 
             if (total_points == 0)
                 return new string[] { toSep };
@@ -151,27 +143,25 @@ namespace Bio.VCF
                 }
             }
             //Now have 0 to n-1 of arrays to go with
-            if(total_points!=(outputArray.Length-1))
+            if (total_points!=(outputArray.Length-1))
             {
                 throw new ArgumentException("Did not find enough tokens during parsing");
             }
             int prev_index = 0;
             int i = 0;
-                for (; i < total_points; ++i)
-                {
-                    var start = split_points[i];
-                    outputArray[i] = toSep.Substring(prev_index, start - prev_index);
-                    prev_index = start + 1;
-                }
+            for (; i < total_points; ++i)
+            {
+                var start = split_points[i];
+                outputArray[i] = toSep.Substring(prev_index, start - prev_index);
+                prev_index = start + 1;
+            }
 
-             if(total_points!=(outputArray.Length-1) || prev_index==(outputArray.Length-1))
+            if (total_points!=(outputArray.Length-1) || prev_index==(outputArray.Length-1))
             {
                 throw new ArgumentException("Did not find enough tokens during parsing");
             }
             //now to add the last bit
-                outputArray[i] = toSep.Substring(prev_index, Length - prev_index);
-            }
-
-        
+            outputArray[i] = toSep.Substring(prev_index, Length - prev_index);
+        }
     }
 }

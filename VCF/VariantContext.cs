@@ -1,182 +1,182 @@
+using Bio.VCF.NewCollections;
 using System;
-using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using Bio.VCF.NewCollections;
 
 namespace Bio.VCF
 {
-	/// <summary>
-	/// Class VariantContext
-	/// 
-	/// == High-level overview ==
-	/// 
-	/// The VariantContext object is a single general class system for representing genetic variation data composed of:
-	/// 
-	/// * Allele: representing single genetic haplotypes (A, T, ATC, -)
-	/// * Genotype: an assignment of alleles for each chromosome of a single named sample at a particular locus
-	/// * VariantContext: an abstract class holding all segregating alleles at a locus as well as genotypes
-	///    for multiple individuals containing alleles at that locus
-	/// 
-	/// The class system works by defining segregating alleles, creating a variant context representing the segregating
-	/// information at a locus, and potentially creating and associating genotypes with individuals in the context.
-	/// 
-	/// All of the classes are highly validating -- call validate() if you modify them -- so you can rely on the
-	/// self-consistency of the data once you have a VariantContext in hand.  The system has a rich set of assessor
-	/// and manipulator routines, as well as more complex static support routines in VariantContextUtils.
-	/// 
-	/// The VariantContext (and Genotype) objects are attributed (supporting addition of arbitrary key/value pairs) and
-	/// filtered (can represent a variation that is viewed as suspect).
-	/// 
-	/// VariantContexts are dynamically typed, so whether a VariantContext is a SNP, Indel, or NoVariant depends
-	/// on the properties of the alleles in the context.  See the detailed documentation on the Type parameter below.
-	/// 
-	/// It's also easy to create subcontexts based on selected genotypes.
-	/// 
-	/// == Working with Variant Contexts ==
-	/// By default, VariantContexts are immutable.  In order to access (in the rare circumstances where you need them)
-	/// setter routines, you need to create MutableVariantContexts and MutableGenotypes.
-	/// 
-	/// === Some example data ===
-	/// 
-	/// Allele A, Aref, T, Tref;
-	/// Allele del, delRef, ATC, ATCref;
-	/// 
-	/// A [ref] / T at 10
-	/// GenomeLoc snpLoc = GenomeLocParser.createGenomeLoc("chr1", 10, 10);
-	/// 
-	/// - / ATC [ref] from 20-23
-	/// GenomeLoc delLoc = GenomeLocParser.createGenomeLoc("chr1", 20, 22);
-	/// 
-	///  // - [ref] / ATC immediately after 20
-	/// GenomeLoc insLoc = GenomeLocParser.createGenomeLoc("chr1", 20, 20);
-	/// 
-	/// === Alleles ===
-	/// 
-	/// See the documentation in the Allele class itself
-	/// 
-	/// What are they?
-	/// 
-	/// Alleles can be either reference or non-reference
-	/// 
-	/// Example alleles used here:
-	/// 
-	///   del = new Allele("-");
-	///   A = new Allele("A");
-	///   Aref = new Allele("A", true);
-	///   T = new Allele("T");
-	///   ATC = new Allele("ATC");
-	/// 
-	/// === Creating variant contexts ===
-	/// 
-	/// ==== By hand ====
-	/// 
-	/// Here's an example of a A/T polymorphism with the A being reference:
-	/// 
-	/// <pre>
-	/// VariantContext vc = new VariantContext(name, snpLoc, Arrays.asList(Aref, T));
-	/// </pre>
-	/// 
-	/// If you want to create a non-variant site, just put in a single reference allele
-	/// 
-	/// <pre>
-	/// VariantContext vc = new VariantContext(name, snpLoc, Arrays.asList(Aref));
-	/// </pre>
-	/// 
-	/// A deletion is just as easy:
-	/// 
-	/// <pre>
-	/// VariantContext vc = new VariantContext(name, delLoc, Arrays.asList(ATCref, del));
-	/// </pre>
-	/// 
-	/// The only 2 things that distinguishes between a insertion and deletion are the reference allele
-	/// and the location of the variation.  An insertion has a Null reference allele and at least
-	/// one non-reference Non-Null allele.  Additionally, the location of the insertion is immediately after
-	/// a 1-bp GenomeLoc (at say 20).
-	/// 
-	/// <pre>
-	/// VariantContext vc = new VariantContext("name", insLoc, Arrays.asList(delRef, ATC));
-	/// </pre>
-	/// 
-	/// ==== Converting rods and other data structures to VCs ====
-	/// 
-	/// You can convert many common types into VariantContexts using the general function:
-	/// 
-	/// <pre>
-	/// VariantContextAdaptors.convertToVariantContext(name, myObject)
-	/// </pre>
-	/// 
-	/// dbSNP and VCFs, for example, can be passed in as myObject and a VariantContext corresponding to that
-	/// object will be returned.  A null return type indicates that the type isn't yet supported.  This is the best
-	/// and easiest way to create contexts using RODs.
-	/// 
-	/// 
-	/// === Working with genotypes ===
-	/// 
-	/// <pre>
-	/// List<Allele> alleles = Arrays.asList(Aref, T);
-	/// Genotype g1 = new Genotype(Arrays.asList(Aref, Aref), "g1", 10);
-	/// Genotype g2 = new Genotype(Arrays.asList(Aref, T), "g2", 10);
-	/// Genotype g3 = new Genotype(Arrays.asList(T, T), "g3", 10);
-	/// VariantContext vc = new VariantContext(snpLoc, alleles, Arrays.asList(g1, g2, g3));
-	/// </pre>
-	/// 
-	/// At this point we have 3 genotypes in our context, g1-g3.
-	/// 
-	/// You can assess a good deal of information about the genotypes through the VariantContext:
-	/// 
-	/// <pre>
-	/// vc.hasGenotypes()
-	/// vc.isMonomorphicInSamples()
-	/// vc.isPolymorphicInSamples()
-	/// vc.getSamples().size()
-	/// 
-	/// vc.getGenotypes()
-	/// vc.getGenotypes().get("g1")
-	/// vc.hasGenotype("g1")
-	/// 
-	/// vc.getCalledChrCount()
-	/// vc.getCalledChrCount(Aref)
-	/// vc.getCalledChrCount(T)
-	/// </pre>
-	/// 
-	/// === NO_CALL alleles ===
-	/// 
-	/// The system allows one to create Genotypes carrying special NO_CALL alleles that aren't present in the
-	/// set of context alleles and that represent undetermined alleles in a genotype:
-	/// 
-	/// Genotype g4 = new Genotype(Arrays.asList(Allele.NO_CALL, Allele.NO_CALL), "NO_DATA_FOR_SAMPLE", 10);
-	/// 
-	/// 
-	/// === subcontexts ===
-	/// It's also very easy get subcontext based only the data in a subset of the genotypes:
-	/// 
-	/// <pre>
-	/// VariantContext vc12 = vc.subContextFromGenotypes(Arrays.asList(g1,g2));
-	/// VariantContext vc1 = vc.subContextFromGenotypes(Arrays.asList(g1));
-	/// </pre>
-	/// 
-	/// <s3>
-	///     Fully decoding.  Currently VariantContexts support some fields, particularly those
-	///     stored as generic attributes, to be of any type.  For example, a field AB might
-	///     be naturally a floating point number, 0.51, but when it's read into a VC its
-	///     not decoded into the Java presentation but left as a string "0.51".  A fully
-	///     decoded VariantContext is one where all values have been converted to their
-	///     corresponding Java object types, based on the types declared in a VCFHeader.
-	/// 
-	///     The fullyDecode() takes a header object and creates a new fully decoded VariantContext
-	///     where all fields are converted to their true java representation.  The VCBuilder
-	///     can be told that all fields are fully decoded, in which case no work is done when
-	///     asking for a fully decoded version of the VC.
-	/// </s3>
-	/// 
-	/// NIGEL NOTE: This class was way too big, I divided it into 3 partial classes, VariantContextStatics.cs 
-	/// contains the statics for this class, while VariantContextGetters.cs contains a lot of get methods that 
-	/// do not seem useful in C# and may be removed in a future version
-	/// </summary>
-	/// 
-	[DebuggerDisplay ("{contig}:{start}")]
+    /// <summary>
+    /// Class VariantContext
+    /// 
+    /// == High-level overview ==
+    /// 
+    /// The VariantContext object is a single general class system for representing genetic variation data composed of:
+    /// 
+    /// * Allele: representing single genetic haplotypes (A, T, ATC, -)
+    /// * Genotype: an assignment of alleles for each chromosome of a single named sample at a particular locus
+    /// * VariantContext: an abstract class holding all segregating alleles at a locus as well as genotypes
+    ///    for multiple individuals containing alleles at that locus
+    /// 
+    /// The class system works by defining segregating alleles, creating a variant context representing the segregating
+    /// information at a locus, and potentially creating and associating genotypes with individuals in the context.
+    /// 
+    /// All of the classes are highly validating -- call validate() if you modify them -- so you can rely on the
+    /// self-consistency of the data once you have a VariantContext in hand.  The system has a rich set of assessor
+    /// and manipulator routines, as well as more complex static support routines in VariantContextUtils.
+    /// 
+    /// The VariantContext (and Genotype) objects are attributed (supporting addition of arbitrary key/value pairs) and
+    /// filtered (can represent a variation that is viewed as suspect).
+    /// 
+    /// VariantContexts are dynamically typed, so whether a VariantContext is a SNP, Indel, or NoVariant depends
+    /// on the properties of the alleles in the context.  See the detailed documentation on the Type parameter below.
+    /// 
+    /// It's also easy to create subcontexts based on selected genotypes.
+    /// 
+    /// == Working with Variant Contexts ==
+    /// By default, VariantContexts are immutable.  In order to access (in the rare circumstances where you need them)
+    /// setter routines, you need to create MutableVariantContexts and MutableGenotypes.
+    /// 
+    /// === Some example data ===
+    /// 
+    /// Allele A, Aref, T, Tref;
+    /// Allele del, delRef, ATC, ATCref;
+    /// 
+    /// A [ref] / T at 10
+    /// GenomeLoc snpLoc = GenomeLocParser.createGenomeLoc("chr1", 10, 10);
+    /// 
+    /// - / ATC [ref] from 20-23
+    /// GenomeLoc delLoc = GenomeLocParser.createGenomeLoc("chr1", 20, 22);
+    /// 
+    ///  // - [ref] / ATC immediately after 20
+    /// GenomeLoc insLoc = GenomeLocParser.createGenomeLoc("chr1", 20, 20);
+    /// 
+    /// === Alleles ===
+    /// 
+    /// See the documentation in the Allele class itself
+    /// 
+    /// What are they?
+    /// 
+    /// Alleles can be either reference or non-reference
+    /// 
+    /// Example alleles used here:
+    /// 
+    ///   del = new Allele("-");
+    ///   A = new Allele("A");
+    ///   Aref = new Allele("A", true);
+    ///   T = new Allele("T");
+    ///   ATC = new Allele("ATC");
+    /// 
+    /// === Creating variant contexts ===
+    /// 
+    /// ==== By hand ====
+    /// 
+    /// Here's an example of a A/T polymorphism with the A being reference:
+    /// 
+    /// <pre>
+    /// VariantContext vc = new VariantContext(name, snpLoc, Arrays.asList(Aref, T));
+    /// </pre>
+    /// 
+    /// If you want to create a non-variant site, just put in a single reference allele
+    /// 
+    /// <pre>
+    /// VariantContext vc = new VariantContext(name, snpLoc, Arrays.asList(Aref));
+    /// </pre>
+    /// 
+    /// A deletion is just as easy:
+    /// 
+    /// <pre>
+    /// VariantContext vc = new VariantContext(name, delLoc, Arrays.asList(ATCref, del));
+    /// </pre>
+    /// 
+    /// The only 2 things that distinguishes between a insertion and deletion are the reference allele
+    /// and the location of the variation.  An insertion has a Null reference allele and at least
+    /// one non-reference Non-Null allele.  Additionally, the location of the insertion is immediately after
+    /// a 1-bp GenomeLoc (at say 20).
+    /// 
+    /// <pre>
+    /// VariantContext vc = new VariantContext("name", insLoc, Arrays.asList(delRef, ATC));
+    /// </pre>
+    /// 
+    /// ==== Converting rods and other data structures to VCs ====
+    /// 
+    /// You can convert many common types into VariantContexts using the general function:
+    /// 
+    /// <pre>
+    /// VariantContextAdaptors.convertToVariantContext(name, myObject)
+    /// </pre>
+    /// 
+    /// dbSNP and VCFs, for example, can be passed in as myObject and a VariantContext corresponding to that
+    /// object will be returned.  A null return type indicates that the type isn't yet supported.  This is the best
+    /// and easiest way to create contexts using RODs.
+    /// 
+    /// 
+    /// === Working with genotypes ===
+    /// 
+    /// <pre>
+    /// List<Allele> alleles = Arrays.asList(Aref, T);
+    /// Genotype g1 = new Genotype(Arrays.asList(Aref, Aref), "g1", 10);
+    /// Genotype g2 = new Genotype(Arrays.asList(Aref, T), "g2", 10);
+    /// Genotype g3 = new Genotype(Arrays.asList(T, T), "g3", 10);
+    /// VariantContext vc = new VariantContext(snpLoc, alleles, Arrays.asList(g1, g2, g3));
+    /// </pre>
+    /// 
+    /// At this point we have 3 genotypes in our context, g1-g3.
+    /// 
+    /// You can assess a good deal of information about the genotypes through the VariantContext:
+    /// 
+    /// <pre>
+    /// vc.hasGenotypes()
+    /// vc.isMonomorphicInSamples()
+    /// vc.isPolymorphicInSamples()
+    /// vc.getSamples().size()
+    /// 
+    /// vc.getGenotypes()
+    /// vc.getGenotypes().get("g1")
+    /// vc.hasGenotype("g1")
+    /// 
+    /// vc.getCalledChrCount()
+    /// vc.getCalledChrCount(Aref)
+    /// vc.getCalledChrCount(T)
+    /// </pre>
+    /// 
+    /// === NO_CALL alleles ===
+    /// 
+    /// The system allows one to create Genotypes carrying special NO_CALL alleles that aren't present in the
+    /// set of context alleles and that represent undetermined alleles in a genotype:
+    /// 
+    /// Genotype g4 = new Genotype(Arrays.asList(Allele.NO_CALL, Allele.NO_CALL), "NO_DATA_FOR_SAMPLE", 10);
+    /// 
+    /// 
+    /// === subcontexts ===
+    /// It's also very easy get subcontext based only the data in a subset of the genotypes:
+    /// 
+    /// <pre>
+    /// VariantContext vc12 = vc.subContextFromGenotypes(Arrays.asList(g1,g2));
+    /// VariantContext vc1 = vc.subContextFromGenotypes(Arrays.asList(g1));
+    /// </pre>
+    /// 
+    /// <s3>
+    ///     Fully decoding.  Currently VariantContexts support some fields, particularly those
+    ///     stored as generic attributes, to be of any type.  For example, a field AB might
+    ///     be naturally a floating point number, 0.51, but when it's read into a VC its
+    ///     not decoded into the Java presentation but left as a string "0.51".  A fully
+    ///     decoded VariantContext is one where all values have been converted to their
+    ///     corresponding Java object types, based on the types declared in a VCFHeader.
+    /// 
+    ///     The fullyDecode() takes a header object and creates a new fully decoded VariantContext
+    ///     where all fields are converted to their true java representation.  The VCBuilder
+    ///     can be told that all fields are fully decoded, in which case no work is done when
+    ///     asking for a fully decoded version of the VC.
+    /// </s3>
+    /// 
+    /// NIGEL NOTE: This class was way too big, I divided it into 3 partial classes, VariantContextStatics.cs 
+    /// contains the statics for this class, while VariantContextGetters.cs contains a lot of get methods that 
+    /// do not seem useful in C# and may be removed in a future version
+    /// </summary>
+    /// 
+    [DebuggerDisplay ("{contig}:{start}")]
 	public partial class VariantContext
 	{
 		/// <summary>

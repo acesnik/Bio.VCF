@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
+
 namespace Bio.VCF
 {
 
-
-	/// <summary>
-	/// This class encompasses all the basic information about a genotype.  It is immutable.
-	/// TODO: Stench of java, remove all get/set non-sense later
-	/// </summary>
-	public abstract class Genotype : IComparable<Genotype>
+    /// <summary>
+    /// This class encompasses all the basic information about a genotype.  It is immutable.
+    /// TODO: Stench of java, remove all get/set non-sense later
+    /// </summary>
+    public abstract class Genotype : IComparable<Genotype>
 	//Class appears to be implemented by Lazy and Fast genotype
     {
         #region STATIC MEMBERS

@@ -5,14 +5,14 @@ using System.Text;
 namespace Bio.VCF
 {
 
-	/// <summary>
-	/// @author ebanks
-	///         <p/>
-	///         Class VCFHeaderLine
-	///         <p/>
-	///         A class representing a key=value entry in the VCF header
-	/// </summary>
-	public class VCFHeaderLine : IComparable
+    /// <summary>
+    /// @author ebanks
+    ///         <p/>
+    ///         Class VCFHeaderLine
+    ///         <p/>
+    ///         A class representing a key=value entry in the VCF header
+    /// </summary>
+    public class VCFHeaderLine : IComparable
 	{
 		protected internal const bool ALLOW_UNBOUND_DESCRIPTIONS = true;
 		protected internal const string UNBOUND_DESCRIPTION = "Not provided in original VCF header";
@@ -26,15 +26,15 @@ namespace Bio.VCF
 		{
 			if (key == null)
 			{
-				throw new System.ArgumentException("VCFHeaderLine: key cannot be null");
+				throw new ArgumentException("VCFHeaderLine: key cannot be null");
 			}
 			if (key.Contains("<") || key.Contains(">"))
 			{
-				throw new System.ArgumentException("VCFHeaderLine: key cannot contain angle brackets");
+				throw new ArgumentException("VCFHeaderLine: key cannot contain angle brackets");
 			}
 			if (key.Contains("="))
 			{
-				throw new System.ArgumentException("VCFHeaderLine: key cannot contain an equals sign");
+				throw new ArgumentException("VCFHeaderLine: key cannot contain an equals sign");
 			}
 			Key = key;
 			Value = value;

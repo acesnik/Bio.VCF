@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Bio.VCF
 {
-	/// <summary>
-	/// a base class for compound header lines, which include info lines and format lines (so far)
-	/// </summary>
-	public abstract class VCFCompoundHeaderLine : VCFHeaderLine, IVCFIDHeaderLine
+    /// <summary>
+    /// a base class for compound header lines, which include info lines and format lines (so far)
+    /// </summary>
+    public abstract class VCFCompoundHeaderLine : VCFHeaderLine, IVCFIDHeaderLine
 	{
 
 		public enum SupportedHeaderLineType

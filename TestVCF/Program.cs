@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Bio.VCF;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Bio.VCF;
 
 namespace TestVCF
 {
-	class Program
+    class Program
 	{
 		static string fname = @"C:\Users\Nigel\SkyDrive\Bio.VCF\carolinensis-bwa-all-merged-trimmedreads-correctheader-freebayes.vcf";
 

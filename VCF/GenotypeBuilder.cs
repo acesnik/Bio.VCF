@@ -1,28 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Bio.VCF
 {
-	/// <summary>
-	/// A builder class for genotypes
-	/// 
-	/// Provides convenience setter methods for all of the Genotype field
-	/// values.  Setter methods can be used in any order, allowing you to
-	/// pass through states that wouldn't be allowed in the highly regulated
-	/// immutable Genotype class.
-	/// 
-	/// All fields default to meaningful MISSING values.
-	/// 
-	/// Call make() to actually create the corresponding Genotype object from
-	/// this builder.  Can be called multiple times to create independent copies,
-	/// or with intervening sets to conveniently make similar Genotypes with
-	/// slight modifications.
-	/// 
-	/// </summary>
-	public sealed class GenotypeBuilder
+    /// <summary>
+    /// A builder class for genotypes
+    /// 
+    /// Provides convenience setter methods for all of the Genotype field
+    /// values.  Setter methods can be used in any order, allowing you to
+    /// pass through states that wouldn't be allowed in the highly regulated
+    /// immutable Genotype class.
+    /// 
+    /// All fields default to meaningful MISSING values.
+    /// 
+    /// Call make() to actually create the corresponding Genotype object from
+    /// this builder.  Can be called multiple times to create independent copies,
+    /// or with intervening sets to conveniently make similar Genotypes with
+    /// slight modifications.
+    /// 
+    /// </summary>
+    public sealed class GenotypeBuilder
     {
         #region STATIC STUFF
         private static readonly List<Allele> HAPLOID_NO_CALL = new List<Allele>(){Allele.NO_CALL};

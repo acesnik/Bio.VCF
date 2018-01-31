@@ -3,10 +3,10 @@ namespace Bio.VCF
 {
 
 
-	/// <summary>
-	/// A class representing a key=value entry for genotype FORMAT fields in the VCF header
-	/// </summary>
-	public class VCFFormatHeaderLine : VCFCompoundHeaderLine
+    /// <summary>
+    /// A class representing a key=value entry for genotype FORMAT fields in the VCF header
+    /// </summary>
+    public class VCFFormatHeaderLine : VCFCompoundHeaderLine
 	{
 
 		public VCFFormatHeaderLine(string name, int count, VCFHeaderLineType type, string description)

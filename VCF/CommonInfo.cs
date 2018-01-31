@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Collections.ObjectModel;
 
 namespace Bio.VCF
 {
 
-	/// <summary>
-	/// Common utility routines for VariantContext and Genotype
-	/// 
-	/// @author depristo
-	/// </summary>
-	public sealed class CommonInfo
+    /// <summary>
+    /// Common utility routines for VariantContext and Genotype
+    /// 
+    /// @author depristo
+    /// </summary>
+    public sealed class CommonInfo
 	{
 		public const double NO_LOG10_PERROR = 1.0;
 

@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Collections.ObjectModel;
-
 
 namespace Bio.VCF
 {
 
-//TODO: This class has the stench of java all over it, clean up later
-	/// <summary>
-	/// Represents an ordered collection of Genotype objects
-	/// </summary>
+    //TODO: This class has the stench of java all over it, clean up later
+    /// <summary>
+    /// Represents an ordered collection of Genotype objects
+    /// </summary>
     public class GenotypesContext : IList<Genotype>
     {
         #region Static Members

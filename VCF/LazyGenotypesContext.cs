@@ -1,20 +1,19 @@
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using System;
+using System.Runtime.CompilerServices;
 
 namespace Bio.VCF
 {
-	/// <summary>
-	/// Lazy-loading GenotypesContext.  A lazy-loading context has access to the
-	/// VCFParser and a unparsed string of genotype data.  If the user attempts to manipulate
-	/// the genotypes contained in this context, we decode the data and become a full blown
-	/// GenotypesContext.  However, if the user never does this we are spared a lot of expense
-	/// decoding the genotypes unnecessarily.
-	/// 
-	/// 
-	/// TODO: Consider changing to work more cleanly with .NET Lazy initalizers
-	/// </summary>
-	public class LazyGenotypesContext : GenotypesContext
+    /// <summary>
+    /// Lazy-loading GenotypesContext.  A lazy-loading context has access to the
+    /// VCFParser and a unparsed string of genotype data.  If the user attempts to manipulate
+    /// the genotypes contained in this context, we decode the data and become a full blown
+    /// GenotypesContext.  However, if the user never does this we are spared a lot of expense
+    /// decoding the genotypes unnecessarily.
+    /// 
+    /// 
+    /// TODO: Consider changing to work more cleanly with .NET Lazy initalizers
+    /// </summary>
+    public class LazyGenotypesContext : GenotypesContext
 	{
 		private static readonly List<Genotype> EMPTY = new List<Genotype> (0);
 		/// <summary>
