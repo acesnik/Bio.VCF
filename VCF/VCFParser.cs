@@ -10,7 +10,7 @@ namespace Bio.VCF
     /// <summary>
     /// A Class to parse VCF Files
     /// </summary>
-    public class VCFParser : IDisposable, IEnumerable<VariantContext>, IEnumerator<VariantContext>
+    public class VCFParser : IDisposable, IEnumerable<VariantContext>, IEnumerator<VariantContext> 
     {
         private readonly VCFCodec vcfCodec = new VCFCodec();
         private readonly StreamReader reader;
@@ -34,7 +34,7 @@ namespace Bio.VCF
             VCFHeader header = vcfCodec.readHeader(reader);
             if (!(header is VCFHeader))
             {
-                throw new System.ArgumentException("The file " + vcfFile.FullName + " did not have a VCF header");
+                throw new ArgumentException("The file " + vcfFile.FullName + " did not have a VCF header");
             }
             this.Header = header;
         }
