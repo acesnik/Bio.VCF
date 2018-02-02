@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Bio.VCF
 {
-    public class OrderedGenericDictionary<KeyT,ValueT> :IDictionary<KeyT, ValueT>
+    public class OrderedGenericDictionary<KeyT, ValueT> : IDictionary<KeyT, ValueT>
     {
         Dictionary<KeyT, ValueT> _dict = new Dictionary<KeyT, ValueT>();
         List<KeyT> _insertOrder = new List<KeyT>();
@@ -58,7 +58,7 @@ namespace Bio.VCF
 
         public ICollection<ValueT> Values
         {
-            get 
+            get
             {
                 return _insertOrder.Select(x => _dict[x]).ToList();
             }
@@ -94,7 +94,7 @@ namespace Bio.VCF
 
         public void CopyTo(KeyValuePair<KeyT, ValueT>[] array, int arrayIndex)
         {
-            var toR=_insertOrder.Select(x => new KeyValuePair<KeyT, ValueT>(x, _dict[x])).ToArray();
+            var toR = _insertOrder.Select(x => new KeyValuePair<KeyT, ValueT>(x, _dict[x])).ToArray();
             toR.CopyTo(array, arrayIndex);
         }
 
@@ -111,7 +111,7 @@ namespace Bio.VCF
         public bool Remove(KeyValuePair<KeyT, ValueT> item)
         {
             ValueT val;
-            bool isIn=_dict.TryGetValue(item.Key,out val);
+            bool isIn = _dict.TryGetValue(item.Key, out val);
             if (isIn && val.Equals(item.Value))
             {
                 _insertOrder.Remove(item.Key);

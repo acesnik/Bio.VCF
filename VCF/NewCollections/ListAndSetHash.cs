@@ -38,7 +38,7 @@ namespace Bio.VCF
         }
         private ListAndHash createNewCachedFilter(string filterString)
         {
-            List<string> fFields=null;
+            List<string> fFields = null;
             // otherwise we have to parse and cache the value
             if (filterString.IndexOf(VCFConstants.FILTER_CODE_SEPARATOR) == -1)
             {
@@ -74,7 +74,7 @@ namespace Bio.VCF
                     return toReturn;
                 }
             }
-           
+
 
         }
         public bool ContainsKey(string filterString)

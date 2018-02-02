@@ -9,38 +9,38 @@ namespace Bio.VCF
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public class LinkedHashSet<T> : IEnumerable<T>,ISet<T>
+    public class LinkedHashSet<T> : IEnumerable<T>, ISet<T>
     {
-        HashSet<T> set=new HashSet<T>();
+        HashSet<T> set = new HashSet<T>();
         List<T> order = new List<T>();
         bool oneAdded = false;
 
-        public LinkedHashSet(bool isReadOnly=false)
+        public LinkedHashSet(bool isReadOnly = false)
         {
             this.IsReadOnly = IsReadOnly;
         }
-        
-        public LinkedHashSet(IEnumerable<T> toAdd,bool isReadOnly=false)
+
+        public LinkedHashSet(IEnumerable<T> toAdd, bool isReadOnly = false)
         {
-            foreach(var v in toAdd)
+            foreach (var v in toAdd)
             {
                 this.Add(v);
             }
-            this.IsReadOnly=true;
+            this.IsReadOnly = true;
         }
 
         /// <summary>
         /// To implement a linked list in the dictionary
         /// </summary>
         /// <typeparam name="T1"></typeparam>
-        
+
         //[Serializable]
         //struct InternalLink<T>: IComparable<T>
         //{
         //    public T Before;
         //    public T After;
         //    public T Self;
-           
+
         //    public override bool Equals(object obj)
         //    {
         //        if (obj is InternalLink<T>)
@@ -59,7 +59,7 @@ namespace Bio.VCF
         //    {
         //        return Self.ToString();
         //    }
-           
+
         //}
 
         public bool Add(T item)
@@ -83,11 +83,11 @@ namespace Bio.VCF
         {
             if (!IsReadOnly)
             {
-            foreach(var v in items)
-            {
-                this.Add(v);
-            }
+                foreach (var v in items)
+                {
+                    this.Add(v);
                 }
+            }
             else
             {
                 throw new Exception("Can't add to read only collection");
@@ -150,12 +150,12 @@ namespace Bio.VCF
         {
             if (!IsReadOnly)
             {
-            if (!set.Contains(item))
-            {
-                set.Add(item);
-                order.Add(item);
-            }
+                if (!set.Contains(item))
+                {
+                    set.Add(item);
+                    order.Add(item);
                 }
+            }
             else
             {
                 throw new Exception("Can't add to read only collection");
@@ -178,7 +178,7 @@ namespace Bio.VCF
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            order.CopyTo(array,arrayIndex);
+            order.CopyTo(array, arrayIndex);
         }
 
         public int Count
@@ -188,21 +188,21 @@ namespace Bio.VCF
 
         public bool IsReadOnly
         {
-            get;private set;
+            get; private set;
         }
 
         public bool Remove(T item)
         {
             if (!IsReadOnly)
             {
-            if (set.Contains(item))
-            {
-                set.Remove(item);
-                order.Remove(item);
-                return true;
-            }
-            else { return false; }
+                if (set.Contains(item))
+                {
+                    set.Remove(item);
+                    order.Remove(item);
+                    return true;
                 }
+                else { return false; }
+            }
             else
             {
                 throw new Exception("Can't add to read only collection");
@@ -212,13 +212,13 @@ namespace Bio.VCF
         {
             if (!IsReadOnly)
             {
-            foreach (var v in items)
-            {
-                if (!Remove(v))
+                foreach (var v in items)
                 {
-                    throw new Exception("Tried to remove element not in the collection");
+                    if (!Remove(v))
+                    {
+                        throw new Exception("Tried to remove element not in the collection");
+                    }
                 }
-            }
             }
             else
             {
@@ -241,5 +241,5 @@ namespace Bio.VCF
             return order.GetEnumerator();
         }
     }
-    
+
 }

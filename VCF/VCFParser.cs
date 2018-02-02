@@ -11,15 +11,15 @@ namespace Bio.VCF
     /// A Class to parse VCF Files
     /// </summary>
     public class VCFParser : IDisposable, IEnumerable<VariantContext>, IEnumerator<VariantContext>
-	{
-		private readonly VCFCodec vcfCodec = new VCFCodec();
-		private readonly StreamReader reader;
+    {
+        private readonly VCFCodec vcfCodec = new VCFCodec();
+        private readonly StreamReader reader;
         private string line = null;
         private VariantContext pCurrent;
         private string fileName;
         // TODO: Add a c'tor that reads intervals.
         public VCFParser(FileInfo vcfFile)
-		{
+        {
             fileName = vcfFile.FullName;
             if (vcfFile.Extension == ".gz")
             {
@@ -29,27 +29,27 @@ namespace Bio.VCF
             }
             else
             {
-                this.reader = new StreamReader(vcfFile.OpenRead(),System.Text.Encoding.ASCII,true,4000000);
+                this.reader = new StreamReader(vcfFile.OpenRead(), System.Text.Encoding.ASCII, true, 4000000);
             }
-			VCFHeader header = vcfCodec.readHeader(reader);
-			if (!(header is VCFHeader))
-			{
-				throw new System.ArgumentException("The file " + vcfFile.FullName + " did not have a VCF header");
-			}
-			this.Header = header;
-		}
-        
-        public VCFParser(string fileName) : this(new FileInfo(fileName))
-        {}
+            VCFHeader header = vcfCodec.readHeader(reader);
+            if (!(header is VCFHeader))
+            {
+                throw new System.ArgumentException("The file " + vcfFile.FullName + " did not have a VCF header");
+            }
+            this.Header = header;
+        }
 
-		public void Close()
-		{
+        public VCFParser(string fileName) : this(new FileInfo(fileName))
+        { }
+
+        public void Close()
+        {
             reader.Close();
-		}
-		public VCFHeader Header
-		{
-			get; private set;
-		}
+        }
+        public VCFHeader Header
+        {
+            get; private set;
+        }
 
         #region IDisposable Members
         // Track whether Dispose has been called. 
@@ -109,7 +109,7 @@ namespace Bio.VCF
 
         public VariantContext Current
         {
-            get 
+            get
             {
                 return pCurrent;
             }
@@ -132,7 +132,7 @@ namespace Bio.VCF
                     return false;
                 else
                 {
-                    pCurrent= vcfCodec.decode(line);
+                    pCurrent = vcfCodec.decode(line);
                     line = null;
                     return true;
                 }

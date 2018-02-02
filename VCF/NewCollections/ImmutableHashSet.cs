@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Bio.VCF
 {
-    public class ImmutableHashSet<T> : IEnumerable<T>,ISet<T>
+    public class ImmutableHashSet<T> : IEnumerable<T>, ISet<T>
     {
-        HashSet<T> _set=new HashSet<T>();
+        HashSet<T> _set = new HashSet<T>();
 
-        const string EXCEPTION="Attempt to modify ImmutableHashSetClass";
+        const string EXCEPTION = "Attempt to modify ImmutableHashSetClass";
 
         #region Public Constructors
 
@@ -104,7 +104,7 @@ namespace Bio.VCF
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            _set.CopyTo(array,arrayIndex);
+            _set.CopyTo(array, arrayIndex);
         }
         public int Count
         {
@@ -113,15 +113,15 @@ namespace Bio.VCF
 
         public bool IsReadOnly
         {
-            get{return true;}
-            
+            get { return true; }
+
         }
         public bool Remove(T item)
         {
             throw new Exception(EXCEPTION);
         }
 
-        
+
         public void RemoveRange(IEnumerable<T> items)
         {
             throw new Exception(EXCEPTION);
@@ -143,5 +143,5 @@ namespace Bio.VCF
             return _set.GetEnumerator();
         }
     }
-    
+
 }

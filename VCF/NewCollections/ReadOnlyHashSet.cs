@@ -9,7 +9,7 @@ namespace PicardSharp.PicardSharp.org.broadinstitute.variant.vcf
         private HashSet<T> _set = new HashSet<T>();
         public ReadOnlyHashSet()
         {
-            
+
         }
 
         public bool Add(T item)
@@ -65,7 +65,7 @@ namespace PicardSharp.PicardSharp.org.broadinstitute.variant.vcf
         public void UnionWith(IEnumerable<T> other)
         {
             throw new Exception("Tried to modify read only collection");
-        
+
         }
 
         void ICollection<T>.Add(T item)
@@ -80,7 +80,7 @@ namespace PicardSharp.PicardSharp.org.broadinstitute.variant.vcf
 
         public bool Contains(T item)
         {
-           return _set.Contains(item);
+            return _set.Contains(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)

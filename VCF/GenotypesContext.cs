@@ -113,8 +113,7 @@ namespace Bio.VCF
         /// </summary>
         internal List<Genotype> notToBeDirectlyAccessedGenotypes;
 
-        public bool Mutable
-        {get;set;}
+        public bool Mutable { get; set; }
 
         /// <summary>
         /// Cached value of the maximum ploidy observed among all samples
@@ -306,7 +305,7 @@ namespace Bio.VCF
             }
             Genotypes.Add(genotype);
         }
-      
+
         /// <summary>
         /// Adds all of the genotypes to this context
         /// 
@@ -330,7 +329,7 @@ namespace Bio.VCF
             }
             Genotypes.AddRange(genotypes);
         }
-       
+
 
         /// <summary>
         /// What is the max ploidy among all samples?  Returns defaultPloidy if no genotypes are present
@@ -512,7 +511,7 @@ namespace Bio.VCF
                 GenotypesContext subset = create(samples.Count);
                 foreach (String sample in samples)
                 {
-                    
+
                     Genotype g = Get(sample);
                     if (g != null)
                     {
@@ -525,7 +524,7 @@ namespace Bio.VCF
         Genotype Get(string sampleName)
         {
             int? offset = getSampleIndex(sampleName);
-            return offset.HasValue? Genotypes[offset.Value]: null ;
+            return offset.HasValue ? Genotypes[offset.Value] : null;
         }
         public override string ToString()
         {

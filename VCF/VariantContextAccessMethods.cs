@@ -315,6 +315,6 @@ namespace Bio.VCF
         }
 
 
-	
+
     }
 }

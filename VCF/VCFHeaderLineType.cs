@@ -26,16 +26,16 @@
 namespace Bio.VCF
 {
 
-	/// <summary>
-	/// the type encodings we use for fields in VCF header lines
-	/// </summary>
-	public enum VCFHeaderLineType
-	{
-		Integer,
-		Float,
-		String,
-		Character,
-		Flag
-	}
+    /// <summary>
+    /// the type encodings we use for fields in VCF header lines
+    /// </summary>
+    public enum VCFHeaderLineType
+    {
+        Integer,
+        Float,
+        String,
+        Character,
+        Flag
+    }
 
 }

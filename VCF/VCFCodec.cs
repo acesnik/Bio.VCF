@@ -39,48 +39,50 @@ namespace Bio.VCF
     /// @author Mark DePristo
     /// @since 2010 </seealso>
     public class VCFCodec : AbstractVCFCodec
-	{
-		// Our aim is to read in the records and convert to VariantContext as quickly as possible, relying on VariantContext to do the validation of any contradictory (or malformed) record parameters.
-		public const string VCF4_MAGIC_HEADER = "##fileformat=VCFv4";
+    {
+        // Our aim is to read in the records and convert to VariantContext as quickly as possible, relying on VariantContext to do the validation of any contradictory (or malformed) record parameters.
+        public const string VCF4_MAGIC_HEADER = "##fileformat=VCFv4";
 
-		public VCFCodec ()
-            : base ("VCFv4", VCFHeaderVersion.VCF4_0, VCFHeaderVersion.VCF4_1, VCFHeaderVersion.VCF4_2)
-		{
-		}
+        public VCFCodec()
+            : base("VCFv4", VCFHeaderVersion.VCF4_0, VCFHeaderVersion.VCF4_1, VCFHeaderVersion.VCF4_2)
+        {
+        }
 
-		/// <summary>
-		/// Parse the filter string, first checking to see if we already have parsed it in a previous attempt
-		/// </summary>
-		/// <param name="filterString">the string to parse </param>
-		/// <returns> a set of the filters applied or null if filters were not applied to the record (e.g. as per the missing value in a VCF) </returns>
-		protected internal override void validateFilters (string filterString)
-		{
-            
-			if (filterString.Equals (VCFConstants.PASSES_FILTERS_v3)) {
-				generateException (VCFConstants.PASSES_FILTERS_v3 + " is an invalid filter name in vcf4", lineNo);
-			}
-			if (filterString.Length == 0) {
-				generateException ("The VCF specification requires a valid filter status: filter was " + filterString, lineNo);
-			}
+        /// <summary>
+        /// Parse the filter string, first checking to see if we already have parsed it in a previous attempt
+        /// </summary>
+        /// <param name="filterString">the string to parse </param>
+        /// <returns> a set of the filters applied or null if filters were not applied to the record (e.g. as per the missing value in a VCF) </returns>
+        protected internal override void validateFilters(string filterString)
+        {
 
-		}
+            if (filterString.Equals(VCFConstants.PASSES_FILTERS_v3))
+            {
+                generateException(VCFConstants.PASSES_FILTERS_v3 + " is an invalid filter name in vcf4", lineNo);
+            }
+            if (filterString.Length == 0)
+            {
+                generateException("The VCF specification requires a valid filter status: filter was " + filterString, lineNo);
+            }
 
-		protected override IList<string> parseFilters (string filterString)
-		{
-			// null for unfiltered
-			if (filterString.Equals (VCFConstants.UNFILTERED))
-				return null;
+        }
 
-			if (filterString.Equals (VCFConstants.PASSES_FILTERS_v4))
-				return new List<string> (0);
-			validateFilters (filterString);
-			// Get Filter String, note this method makes the entry if it doesn't already exist
-			return filterHash [filterString].List;
-		}
+        protected override IList<string> parseFilters(string filterString)
+        {
+            // null for unfiltered
+            if (filterString.Equals(VCFConstants.UNFILTERED))
+                return null;
 
-		public bool CanDecode (string potentialInput)
-		{
-			return CanDecodeFile (potentialInput, VCF4_MAGIC_HEADER);
-		}
-	}
+            if (filterString.Equals(VCFConstants.PASSES_FILTERS_v4))
+                return new List<string>(0);
+            validateFilters(filterString);
+            // Get Filter String, note this method makes the entry if it doesn't already exist
+            return filterHash[filterString].List;
+        }
+
+        public bool CanDecode(string potentialInput)
+        {
+            return CanDecodeFile(potentialInput, VCF4_MAGIC_HEADER);
+        }
+    }
 }

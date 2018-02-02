@@ -15,15 +15,15 @@ namespace Bio.VCF
         public static void Split(string toSeparate, char separator, string[] outputArray)
         {
 
-            if (outputArray.Length == 0 )
+            if (outputArray.Length == 0)
                 throw new ArgumentException("Cannot fill an empty array");
 
             if (outputArray.Length == 1)
             {
                 outputArray[0] = toSeparate;
             }
-            SplitByCharacters(toSeparate,outputArray, separator);
-        }    
+            SplitByCharacters(toSeparate, outputArray, separator);
+        }
         public static String[] Split(string toSeperate, char separator, int count, StringSplitOptions options)
         {
             if (count < 0)
@@ -36,7 +36,7 @@ namespace Bio.VCF
 
             if (count == 1)
             {
-                return count == 0 ? new string[0] : new String[1] { toSeperate};
+                return count == 0 ? new string[0] : new String[1] { toSeperate };
             }
             return SplitByCharacters(toSeperate, separator, count, options != 0);
         }
@@ -46,10 +46,10 @@ namespace Bio.VCF
             int[] split_points = null;
             int total_points = 0;
             --count;
-            int Length=toSep.Length;
-          
+            int Length = toSep.Length;
+
             fixed (char* src = toSep)
-            {                    
+            {
                 char* src_ptr = src;
                 //char* sep_ptr_end = sep_src + sep.Length;
                 int len = toSep.Length;
@@ -68,12 +68,12 @@ namespace Bio.VCF
 
                         split_points[total_points++] = Length - len;
                         if (total_points == count && !removeEmpty)
-                            len = 0;                                   
+                            len = 0;
                     }
                     ++src_ptr;
                     --len;
-                }                    
-            }          
+                }
+            }
 
             if (total_points == 0)
                 return new string[] { toSep };
@@ -86,7 +86,7 @@ namespace Bio.VCF
                 for (; i < total_points; ++i)
                 {
                     var start = split_points[i];
-                    res[i]=toSep.Substring(prev_index,start - prev_index);
+                    res[i] = toSep.Substring(prev_index, start - prev_index);
                     //res[i] = SubstringUnchecked(prev_index, start - prev_index);
                     prev_index = start + 1;
                 }
@@ -104,7 +104,7 @@ namespace Bio.VCF
                     {
                         if (used == count)
                             break;
-                        res[used++] = toSep.Substring(prev_index,length);// SubstringUnchecked(prev_index, length);
+                        res[used++] = toSep.Substring(prev_index, length);// SubstringUnchecked(prev_index, length);
                     }
 
                     prev_index = start + 1;
@@ -112,16 +112,16 @@ namespace Bio.VCF
 
                 length = Length - prev_index;
                 if (length != 0)
-                    res[used++] = toSep.Substring(prev_index,length);// SubstringUnchecked(prev_index, length);
+                    res[used++] = toSep.Substring(prev_index, length);// SubstringUnchecked(prev_index, length);
                 if (used != res.Length)
                     Array.Resize(ref res, used);
             }
             return res;
         }
-        private static unsafe void SplitByCharacters(string toSep,  string[] outputArray,char sep)
+        private static unsafe void SplitByCharacters(string toSep, string[] outputArray, char sep)
         {
             int count = outputArray.Length;
-            int[] split_points = new int[outputArray.Length-1];
+            int[] split_points = new int[outputArray.Length - 1];
             int total_points = 0;
             --count;
             int Length = toSep.Length;
@@ -143,7 +143,7 @@ namespace Bio.VCF
                 }
             }
             //Now have 0 to n-1 of arrays to go with
-            if (total_points!=(outputArray.Length-1))
+            if (total_points != (outputArray.Length - 1))
             {
                 throw new ArgumentException("Did not find enough tokens during parsing");
             }
@@ -156,7 +156,7 @@ namespace Bio.VCF
                 prev_index = start + 1;
             }
 
-            if (total_points!=(outputArray.Length-1) || prev_index==(outputArray.Length-1))
+            if (total_points != (outputArray.Length - 1) || prev_index == (outputArray.Length - 1))
             {
                 throw new ArgumentException("Did not find enough tokens during parsing");
             }

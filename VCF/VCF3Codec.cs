@@ -17,41 +17,42 @@ namespace Bio.VCF
     /// </p>
     /// 
     public class VCF3Codec : AbstractVCFCodec
-	{
-		public VCF3Codec () : base ("VCFv3", VCFHeaderVersion.VCF3_2, VCFHeaderVersion.VCF3_3)
-		{
-		}
+    {
+        public VCF3Codec() : base("VCFv3", VCFHeaderVersion.VCF3_2, VCFHeaderVersion.VCF3_3)
+        {
+        }
 
-		public const string VCF3_MAGIC_HEADER = "##fileformat=VCFv3";
+        public const string VCF3_MAGIC_HEADER = "##fileformat=VCFv3";
 
-		protected internal override void validateFilters (string filterString)
-		{
-			if (filterString.Length == 0) {
-				generateException ("The VCF specification requires a valid filter status");
-			}
-		}
+        protected internal override void validateFilters(string filterString)
+        {
+            if (filterString.Length == 0)
+            {
+                generateException("The VCF specification requires a valid filter status");
+            }
+        }
 
-		public bool CanDecode (string potentialInput)
-		{
-			return CanDecodeFile (potentialInput, VCF3_MAGIC_HEADER);
-		}
+        public bool CanDecode(string potentialInput)
+        {
+            return CanDecodeFile(potentialInput, VCF3_MAGIC_HEADER);
+        }
 
-		/// <summary>
-		/// parse the filter string, first checking to see if we already have parsed it in a previous attempt </summary>
-		/// <param name="filterString"> the string to parse </param>
-		/// <returns> a set of the filters applied </returns>
-		protected override IList<String> parseFilters (String filterString)
-		{
-			// null for unfiltered
-			if (filterString.Equals (VCFConstants.UNFILTERED))
-				return null;
-            
-			if (filterString.Equals (VCFConstants.PASSES_FILTERS_v3))
-				return new List<String> (0);
+        /// <summary>
+        /// parse the filter string, first checking to see if we already have parsed it in a previous attempt </summary>
+        /// <param name="filterString"> the string to parse </param>
+        /// <returns> a set of the filters applied </returns>
+        protected override IList<String> parseFilters(String filterString)
+        {
+            // null for unfiltered
+            if (filterString.Equals(VCFConstants.UNFILTERED))
+                return null;
 
-			validateFilters (filterString);
+            if (filterString.Equals(VCFConstants.PASSES_FILTERS_v3))
+                return new List<String>(0);
 
-			return filterHash [filterString].List;
-		}
-	}
+            validateFilters(filterString);
+
+            return filterHash[filterString].List;
+        }
+    }
 }

@@ -205,7 +205,7 @@ namespace Bio.VCF
         #endregion
 
         #region Public Methods
-        public void WriteVariants(string outFileName, IEnumerable<VariantContext> variants,VCFHeader header)
+        public void WriteVariants(string outFileName, IEnumerable<VariantContext> variants, VCFHeader header)
         {
             System.Text.Encoding enc = System.Text.Encoding.GetEncoding(encodingName);
             writer = new StreamWriter(outFileName, false, enc);
@@ -224,19 +224,19 @@ namespace Bio.VCF
         #endregion
 
         // should we write genotypes or just sites?
-		protected internal readonly bool doNotWriteGenotypes;
+        protected internal readonly bool doNotWriteGenotypes;
 
-		// the VCF header we're storing
-		protected internal VCFHeader mHeader = null;
+        // the VCF header we're storing
+        protected internal VCFHeader mHeader = null;
 
 
-		private readonly bool allowMissingFieldsInHeader;
+        private readonly bool allowMissingFieldsInHeader;
 
-		private StreamWriter writer;
+        private StreamWriter writer;
 
-		private IntGenotypeFieldAccessors intGenotypeFieldAccessors = new IntGenotypeFieldAccessors();
+        private IntGenotypeFieldAccessors intGenotypeFieldAccessors = new IntGenotypeFieldAccessors();
 
-		
+
 
         /// <summary>
         /// Add a record to the file
@@ -244,7 +244,7 @@ namespace Bio.VCF
         /// <param name="vc">The Variant Context object </param>
         protected string getVariantLinetoWrite(VariantContext vc)
         {
-     
+
             if (doNotWriteGenotypes)
             {
                 vc = (new VariantContextBuilder(vc)).noGenotypes().make();
@@ -347,308 +347,308 @@ namespace Bio.VCF
         }
 
         void writeHeader(VCFHeader header)
-		{
-          
-			header = doNotWriteGenotypes ? new VCFHeader(header.MetaDataInSortedOrder) : header;
-			try
-			{
-				// the file format field needs to be written first
-				writer.Write(VERSION_LINE + "\n");
+        {
 
-				foreach (VCFHeaderLine line in header.MetaDataInSortedOrder)
-				{
-					if (VCFHeaderVersion.IsFormatString(line.Key))
-					{
-						continue;
-					}
+            header = doNotWriteGenotypes ? new VCFHeader(header.MetaDataInSortedOrder) : header;
+            try
+            {
+                // the file format field needs to be written first
+                writer.Write(VERSION_LINE + "\n");
 
-					writer.Write(VCFHeader.METADATA_INDICATOR);
-					writer.Write(line.ToString());
-					writer.Write("\n");
-				}
+                foreach (VCFHeaderLine line in header.MetaDataInSortedOrder)
+                {
+                    if (VCFHeaderVersion.IsFormatString(line.Key))
+                    {
+                        continue;
+                    }
 
-				// write out the column line
-				writer.Write(VCFHeader.HEADER_INDICATOR);
-				bool isFirst = true;
-				foreach (string field in VCFHeader.HEADER_FIELDS)
-				{
-					if (isFirst)
-					{
-						isFirst = false; // don't write out a field separator
-					}
-					else
-					{
-						writer.Write(VCFConstants.FIELD_SEPARATOR);
-					}
-					writer.Write(field.ToString());
-				}
-				if (header.hasGenotypingData())
-				{
-					writer.Write(VCFConstants.FIELD_SEPARATOR);
-					writer.Write("FORMAT");
-					foreach (string sample in header.GenotypeSampleNames)
-					{
-						writer.Write(VCFConstants.FIELD_SEPARATOR);
-						writer.Write(sample);
-					}
-				}
-				writer.Write("\n");
-	        }
-			catch (IOException e)
-			{
-				throw new Exception("IOException writing the VCF header." , e);
-			}
+                    writer.Write(VCFHeader.METADATA_INDICATOR);
+                    writer.Write(line.ToString());
+                    writer.Write("\n");
+                }
 
-			
-		}	
+                // write out the column line
+                writer.Write(VCFHeader.HEADER_INDICATOR);
+                bool isFirst = true;
+                foreach (string field in VCFHeader.HEADER_FIELDS)
+                {
+                    if (isFirst)
+                    {
+                        isFirst = false; // don't write out a field separator
+                    }
+                    else
+                    {
+                        writer.Write(VCFConstants.FIELD_SEPARATOR);
+                    }
+                    writer.Write(field.ToString());
+                }
+                if (header.hasGenotypingData())
+                {
+                    writer.Write(VCFConstants.FIELD_SEPARATOR);
+                    writer.Write("FORMAT");
+                    foreach (string sample in header.GenotypeSampleNames)
+                    {
+                        writer.Write(VCFConstants.FIELD_SEPARATOR);
+                        writer.Write(sample);
+                    }
+                }
+                writer.Write("\n");
+            }
+            catch (IOException e)
+            {
+                throw new Exception("IOException writing the VCF header.", e);
+            }
 
 
-		// --------------------------------------------------------------------------------
-		//
-		// implementation functions
-		//
-		// --------------------------------------------------------------------------------
-		private string getFilterString(VariantContext vc)
-		{
-			if (vc.Filtered)
-			{
-				foreach (String filter in vc.Filters)
-				{
-					if (!mHeader.hasFilterLine(filter))
-					{
-						fieldIsMissingFromHeaderError(vc, filter, "FILTER");
-					}
-				}
+        }
 
-				return String.Join(";", ParsingUtils.SortList(vc.Filters.ToList()).ToArray());
-			}
-			else if (vc.FiltersWereApplied)
-			{
-				return VCFConstants.PASSES_FILTERS_v4;
-			}
-			else
-			{
-				return VCFConstants.UNFILTERED;
-			}
-		}
 
-		
+        // --------------------------------------------------------------------------------
+        //
+        // implementation functions
+        //
+        // --------------------------------------------------------------------------------
+        private string getFilterString(VariantContext vc)
+        {
+            if (vc.Filtered)
+            {
+                foreach (String filter in vc.Filters)
+                {
+                    if (!mHeader.hasFilterLine(filter))
+                    {
+                        fieldIsMissingFromHeaderError(vc, filter, "FILTER");
+                    }
+                }
 
-		private string formatQualValue(double qual)
-		{
+                return String.Join(";", ParsingUtils.SortList(vc.Filters.ToList()).ToArray());
+            }
+            else if (vc.FiltersWereApplied)
+            {
+                return VCFConstants.PASSES_FILTERS_v4;
+            }
+            else
+            {
+                return VCFConstants.UNFILTERED;
+            }
+        }
+
+
+
+        private string formatQualValue(double qual)
+        {
             //TODO: Format is bad right now.
-			string s = String.Format(QUAL_FORMAT_STRING, qual);
-			if (s.EndsWith(QUAL_FORMAT_EXTENSION_TO_TRIM))
-			{
-				s = s.Substring(0, s.Length - QUAL_FORMAT_EXTENSION_TO_TRIM.Length);
-			}
-			return s;
-		}
+            string s = String.Format(QUAL_FORMAT_STRING, qual);
+            if (s.EndsWith(QUAL_FORMAT_EXTENSION_TO_TRIM))
+            {
+                s = s.Substring(0, s.Length - QUAL_FORMAT_EXTENSION_TO_TRIM.Length);
+            }
+            return s;
+        }
 
-		/// <summary>
-		/// Create the info string; assumes that no values are null
-		/// </summary>
-		/// <param name="infoFields"> a map of info fields </param>
-		/// <exception cref="IOException"> for writer </exception>
-		private string getInfoString(IDictionary<string, string> infoFields)
-		{
-			if (infoFields.Count == 0)
-			{
+        /// <summary>
+        /// Create the info string; assumes that no values are null
+        /// </summary>
+        /// <param name="infoFields"> a map of info fields </param>
+        /// <exception cref="IOException"> for writer </exception>
+        private string getInfoString(IDictionary<string, string> infoFields)
+        {
+            if (infoFields.Count == 0)
+            {
                 return VCFConstants.EMPTY_INFO_FIELD;
-			}
-			bool isFirst = true;
+            }
+            bool isFirst = true;
             string toReturn = "";
-			foreach (KeyValuePair<string, string> entry in infoFields)
-			{
-				if (isFirst)
-				{
-					isFirst = false;
-				}
-				else
-				{
-					toReturn+=VCFConstants.INFO_FIELD_SEPARATOR;
-				}
+            foreach (KeyValuePair<string, string> entry in infoFields)
+            {
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
+                else
+                {
+                    toReturn += VCFConstants.INFO_FIELD_SEPARATOR;
+                }
 
-				string key = entry.Key;
-				toReturn+=key;
+                string key = entry.Key;
+                toReturn += key;
 
-				if (!entry.Value.Equals(""))
-				{
-					VCFInfoHeaderLine metaData = mHeader.getInfoHeaderLine(key);
-					if (metaData == null || metaData.CountType != VCFHeaderLineCount.INTEGER || metaData.Count != 0)
-					{
-						toReturn+="=";
-						 toReturn+=entry.Value;
-					}
-				}
-			}
+                if (!entry.Value.Equals(""))
+                {
+                    VCFInfoHeaderLine metaData = mHeader.getInfoHeaderLine(key);
+                    if (metaData == null || metaData.CountType != VCFHeaderLineCount.INTEGER || metaData.Count != 0)
+                    {
+                        toReturn += "=";
+                        toReturn += entry.Value;
+                    }
+                }
+            }
             return toReturn;
-		}
+        }
 
-		/// <summary>
-		/// add the genotype data
-		/// </summary>
-		/// <param name="vc">                     the variant context </param>
-		/// <param name="genotypeFormatKeys">  Genotype formatting string </param>
-		/// <param name="alleleMap">              alleles for this context </param>
-		/// <exception cref="IOException"> for writer </exception>
-		private string getGenotypeDataText(VariantContext vc, IDictionary<Allele, string> alleleMap, IList<string> genotypeFormatKeys)
-		{
+        /// <summary>
+        /// add the genotype data
+        /// </summary>
+        /// <param name="vc">                     the variant context </param>
+        /// <param name="genotypeFormatKeys">  Genotype formatting string </param>
+        /// <param name="alleleMap">              alleles for this context </param>
+        /// <exception cref="IOException"> for writer </exception>
+        private string getGenotypeDataText(VariantContext vc, IDictionary<Allele, string> alleleMap, IList<string> genotypeFormatKeys)
+        {
             StringBuilder sbn = new StringBuilder();
-			int ploidy = vc.GetMaxPloidy(2);
-			foreach (string sample in mHeader.GenotypeSampleNames)
-			{
-				sbn.Append(VCFConstants.FIELD_SEPARATOR);
+            int ploidy = vc.GetMaxPloidy(2);
+            foreach (string sample in mHeader.GenotypeSampleNames)
+            {
+                sbn.Append(VCFConstants.FIELD_SEPARATOR);
 
-				Genotype g = vc.GetGenotype(sample);
-				if (g == null)
-				{
-					g = GenotypeBuilder.CreateMissing(sample, ploidy);
-				}
-				IList<string> attrs = new List<string>(genotypeFormatKeys.Count);
-				foreach (string field in genotypeFormatKeys)
-				{
-					if (field.Equals(VCFConstants.GENOTYPE_KEY))
-					{
-						if (!g.Available)
-						{
-							throw new Exception("GTs cannot be missing for some samples if they are available for others in the record");
-						}
+                Genotype g = vc.GetGenotype(sample);
+                if (g == null)
+                {
+                    g = GenotypeBuilder.CreateMissing(sample, ploidy);
+                }
+                IList<string> attrs = new List<string>(genotypeFormatKeys.Count);
+                foreach (string field in genotypeFormatKeys)
+                {
+                    if (field.Equals(VCFConstants.GENOTYPE_KEY))
+                    {
+                        if (!g.Available)
+                        {
+                            throw new Exception("GTs cannot be missing for some samples if they are available for others in the record");
+                        }
 
-						sbn.Append(getAlleleText(g.getAllele(0), alleleMap));
-						for (int i = 1; i < g.Ploidy; i++)
-						{
+                        sbn.Append(getAlleleText(g.getAllele(0), alleleMap));
+                        for (int i = 1; i < g.Ploidy; i++)
+                        {
                             sbn.Append(g.Phased ? VCFConstants.PHASED : VCFConstants.UNPHASED);
-							sbn.Append(getAlleleText(g.getAllele(i), alleleMap));
-						}
-						continue;
-					}
-					else
-					{
-						string outputValue;
-						if (field.Equals(VCFConstants.GENOTYPE_FILTER_KEY))
-						{
-							outputValue = g.Filtered ? g.Filters : VCFConstants.PASSES_FILTERS_v4;
-						}
-						else
-						{
-							IntGenotypeFieldAccessors.Accessor accessor = intGenotypeFieldAccessors.GetAccessor(field);
-							if (accessor != null)
-							{
+                            sbn.Append(getAlleleText(g.getAllele(i), alleleMap));
+                        }
+                        continue;
+                    }
+                    else
+                    {
+                        string outputValue;
+                        if (field.Equals(VCFConstants.GENOTYPE_FILTER_KEY))
+                        {
+                            outputValue = g.Filtered ? g.Filters : VCFConstants.PASSES_FILTERS_v4;
+                        }
+                        else
+                        {
+                            IntGenotypeFieldAccessors.Accessor accessor = intGenotypeFieldAccessors.GetAccessor(field);
+                            if (accessor != null)
+                            {
 
-								int[] intValues = accessor.getValues(g);
-								if (intValues == null)
-								{
-									outputValue = VCFConstants.MISSING_VALUE_v4;
-								}
-								else if (intValues.Length == 1) // fast path
-								{
-									outputValue = Convert.ToString(intValues[0]);
-								}
-								else
-								{
-									StringBuilder sb = new StringBuilder();
-									sb.Append(intValues[0]);
-									for (int i = 1; i < intValues.Length; i++)
-									{
-										sb.Append(",");
-										sb.Append(intValues[i]);
-									}
-									outputValue = sb.ToString();
-								}
-							}
-							else
-							{
-								object val = g.HasExtendedAttribute(field) ? g.GetExtendedAttribute(field) : VCFConstants.MISSING_VALUE_v4;
+                                int[] intValues = accessor.getValues(g);
+                                if (intValues == null)
+                                {
+                                    outputValue = VCFConstants.MISSING_VALUE_v4;
+                                }
+                                else if (intValues.Length == 1) // fast path
+                                {
+                                    outputValue = Convert.ToString(intValues[0]);
+                                }
+                                else
+                                {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.Append(intValues[0]);
+                                    for (int i = 1; i < intValues.Length; i++)
+                                    {
+                                        sb.Append(",");
+                                        sb.Append(intValues[i]);
+                                    }
+                                    outputValue = sb.ToString();
+                                }
+                            }
+                            else
+                            {
+                                object val = g.HasExtendedAttribute(field) ? g.GetExtendedAttribute(field) : VCFConstants.MISSING_VALUE_v4;
 
-								VCFFormatHeaderLine metaData = mHeader.getFormatHeaderLine(field);
-								if (metaData != null)
-								{
-									int numInFormatField = metaData.getCount(vc);
-									if (numInFormatField > 1 && val.Equals(VCFConstants.MISSING_VALUE_v4))
-									{
-										// If we have a missing field but multiple values are expected, we need to construct a new string with all fields.
-										// For example, if Number=2, the string has to be ".,."
-										StringBuilder sb = new StringBuilder(VCFConstants.MISSING_VALUE_v4);
-										for (int i = 1; i < numInFormatField; i++)
-										{
-											sb.Append(",");
-											sb.Append(VCFConstants.MISSING_VALUE_v4);
-										}
-										val = sb.ToString();
-									}
-								}
+                                VCFFormatHeaderLine metaData = mHeader.getFormatHeaderLine(field);
+                                if (metaData != null)
+                                {
+                                    int numInFormatField = metaData.getCount(vc);
+                                    if (numInFormatField > 1 && val.Equals(VCFConstants.MISSING_VALUE_v4))
+                                    {
+                                        // If we have a missing field but multiple values are expected, we need to construct a new string with all fields.
+                                        // For example, if Number=2, the string has to be ".,."
+                                        StringBuilder sb = new StringBuilder(VCFConstants.MISSING_VALUE_v4);
+                                        for (int i = 1; i < numInFormatField; i++)
+                                        {
+                                            sb.Append(",");
+                                            sb.Append(VCFConstants.MISSING_VALUE_v4);
+                                        }
+                                        val = sb.ToString();
+                                    }
+                                }
 
-								// assume that if key is absent, then the given string encoding suffices
-								outputValue = formatVCFField(val);
-							}
-						}
+                                // assume that if key is absent, then the given string encoding suffices
+                                outputValue = formatVCFField(val);
+                            }
+                        }
 
-						if (outputValue != null)
-						{
-							attrs.Add(outputValue);
-						}
-					}
-				}
+                        if (outputValue != null)
+                        {
+                            attrs.Add(outputValue);
+                        }
+                    }
+                }
 
-				// strip off trailing missing values
-				for (int i = attrs.Count - 1; i >= 0; i--)
-				{
-					if (isMissingValue(attrs[i]))
-					{
-						attrs.RemoveAt(i);
-					}
-					else
-					{
-						break;
-					}
-				}
+                // strip off trailing missing values
+                for (int i = attrs.Count - 1; i >= 0; i--)
+                {
+                    if (isMissingValue(attrs[i]))
+                    {
+                        attrs.RemoveAt(i);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
 
-				for (int i = 0; i < attrs.Count; i++)
-				{
-					if (i > 0 || genotypeFormatKeys.Contains(VCFConstants.GENOTYPE_KEY))
-					{
-						sbn.Append(VCFConstants.GENOTYPE_FIELD_SEPARATOR);
-					}
-					sbn.Append(attrs[i]);
-				}
-			}
+                for (int i = 0; i < attrs.Count; i++)
+                {
+                    if (i > 0 || genotypeFormatKeys.Contains(VCFConstants.GENOTYPE_KEY))
+                    {
+                        sbn.Append(VCFConstants.GENOTYPE_FIELD_SEPARATOR);
+                    }
+                    sbn.Append(attrs[i]);
+                }
+            }
             return sbn.ToString();
-		}
+        }
 
-		private bool isMissingValue(string s)
-		{
-			// we need to deal with the case that it's a list of missing values
-			return (countOccurrences(VCFConstants.MISSING_VALUE_v4[0], s) + countOccurrences(',', s) == s.Length);
-		}
+        private bool isMissingValue(string s)
+        {
+            // we need to deal with the case that it's a list of missing values
+            return (countOccurrences(VCFConstants.MISSING_VALUE_v4[0], s) + countOccurrences(',', s) == s.Length);
+        }
 
-		private string getAlleleText(Allele allele, IDictionary<Allele, string> alleleMap)
-		{
-			string encoding = alleleMap[allele];
-			if (encoding == null)
-			{
-				throw new Exception("Allele " + allele + " is not an allele in the variant context");
-			}
+        private string getAlleleText(Allele allele, IDictionary<Allele, string> alleleMap)
+        {
+            string encoding = alleleMap[allele];
+            if (encoding == null)
+            {
+                throw new Exception("Allele " + allele + " is not an allele in the variant context");
+            }
             return encoding;
-		}
+        }
 
-		/// <summary>
-		/// Takes a double value and pretty prints it to a String for display
-		/// 
-		/// Large doubles => gets %.2f style formatting
-		/// Doubles < 1 / 10 but > 1/100 </>=> get %.3f style formatting
-		/// Double < 1/100 => %.3e formatting </summary>
-		/// <param name="d">
-		/// @return </param>
+        /// <summary>
+        /// Takes a double value and pretty prints it to a String for display
+        /// 
+        /// Large doubles => gets %.2f style formatting
+        /// Doubles < 1 / 10 but > 1/100 </>=> get %.3f style formatting
+        /// Double < 1/100 => %.3e formatting </summary>
+        /// <param name="d">
+        /// @return </param>
 
-		
-		private void fieldIsMissingFromHeaderError(VariantContext vc, string id, string field)
-		{
-			if (!allowMissingFieldsInHeader)
-			{
-				throw new Exception("Key " + id + " found in VariantContext field " + field + " at " + vc.Chr + ":" + vc.Start + " but this key isn't defined in the VCFHeader.  We require all VCFs to have" + " complete VCF headers by default.");
-			}
-		}
-	}
+
+        private void fieldIsMissingFromHeaderError(VariantContext vc, string id, string field)
+        {
+            if (!allowMissingFieldsInHeader)
+            {
+                throw new Exception("Key " + id + " found in VariantContext field " + field + " at " + vc.Chr + ":" + vc.Start + " but this key isn't defined in the VCFHeader.  We require all VCFs to have" + " complete VCF headers by default.");
+            }
+        }
+    }
 
 }

@@ -26,11 +26,11 @@
 namespace Bio.VCF
 {
 
-	/// <summary>
-	/// an interface for ID-based header lines * </summary>
-	public interface IVCFIDHeaderLine
-	{
-		string ID {get;}
-	}
+    /// <summary>
+    /// an interface for ID-based header lines * </summary>
+    public interface IVCFIDHeaderLine
+    {
+        string ID { get; }
+    }
 
 }

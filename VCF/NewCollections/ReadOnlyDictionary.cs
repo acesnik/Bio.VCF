@@ -14,7 +14,7 @@ namespace Bio.VCF
         {
 
         }
-        public ReadOnlyDictionary(IEnumerable<KeyValuePair<TKey,TValue>> set)
+        public ReadOnlyDictionary(IEnumerable<KeyValuePair<TKey, TValue>> set)
         {
             foreach (var kv in set)
             {

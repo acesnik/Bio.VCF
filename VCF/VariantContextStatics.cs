@@ -14,6 +14,7 @@ namespace Bio.VCF
         protected static readonly Validation NO_VALIDATION = Validation.NONE;
         public const double NO_LOG10_PERROR = CommonInfo.NO_LOG10_PERROR;
         public static readonly ISet<string> PASSES_FILTERS = new LinkedHashSet<string>(true);
+
         // ---------------------------------------------------------------------------------------------------------
         //
         // validation mode
