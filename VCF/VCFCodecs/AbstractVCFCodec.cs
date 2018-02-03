@@ -311,7 +311,9 @@ namespace Bio.VCF
             {
                 pos = Convert.ToInt32(parts[1]);
             }
+#pragma warning disable 0168
             catch (FormatException e)
+#pragma warning restore 0168
             {
                 generateException(parts[1] + " is not a valid start position in the VCF format");
             }
@@ -349,7 +351,9 @@ namespace Bio.VCF
                 {
                     builder.Stop = Convert.ToInt32(attrs[VCFConstants.END_KEY].ToString());
                 }
+                #pragma warning disable 0168
                 catch (Exception e)
+                #pragma warning restore 0168
                 {
                     generateException("the END value in the INFO field is not valid");
                 }
@@ -514,7 +518,9 @@ namespace Bio.VCF
             {
                 i = Convert.ToInt32(index);
             }
+            #pragma warning disable 0168
             catch (FormatException e)
+            #pragma warning restore 0168
             {
                 throw new VCFParsingError("The following invalid GT allele index was encountered in the file: " + index);
             }
@@ -816,7 +822,7 @@ namespace Bio.VCF
                                 {
                                     if (GTValueArray[i] == VCFConstants.MISSING_GENOTYPE_QUALITY_v3)
                                     {
-                                        gb.noGQ();
+                                        gb.GQ = -1;
                                     }
                                     else
                                     {
@@ -833,7 +839,7 @@ namespace Bio.VCF
                                 }
                                 else if (gtKey == VCFConstants.GENOTYPE_LIKELIHOODS_KEY)
                                 {
-                                    gb.PL = (GenotypeLikelihoods.fromGLField(GTValueArray[i]).AsPLs);
+                                    gb.PL = (GenotypeLikelihoods.fromGLField(GTValueArray[i]).AsPLs());
                                 }
                                 else if (gtKey.Equals(VCFConstants.DEPTH_KEY))
                                 {

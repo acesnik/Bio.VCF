@@ -190,13 +190,15 @@ namespace Bio.VCF
             {
                 type = (VCFHeaderLineType)Enum.Parse(typeof(VCFHeaderLineType), mapping["Type"]);
             }
+#pragma warning disable 0168
             catch (Exception e)
+#pragma warning restore 0168
             {
                 throw new VCFParsingError(mapping["Type"] + " is not a valid type in the VCF specification (note that types are case-sensitive)");
             }
             if (type == VCFHeaderLineType.Flag && !allowFlagValues())
             {
-                throw new System.ArgumentException("Flag is an unsupported type for this kind of field");
+                throw new ArgumentException("Flag is an unsupported type for this kind of field");
             }
 
             description = mapping["Description"];
@@ -213,15 +215,15 @@ namespace Bio.VCF
         {
             if (name == null || Type == null || description == null || lineType == null)
             {
-                throw new System.ArgumentException(string.Format("Invalid VCFCompoundHeaderLine: key={0} name={1} type={2} desc={3} lineType={4}", base.Key, name, type, description, lineType));
+                throw new ArgumentException(string.Format("Invalid VCFCompoundHeaderLine: key={0} name={1} type={2} desc={3} lineType={4}", base.Key, name, type, description, lineType));
             }
             if (name.Contains("<") || name.Contains(">"))
             {
-                throw new System.ArgumentException("VCFHeaderLine: ID cannot contain angle brackets");
+                throw new ArgumentException("VCFHeaderLine: ID cannot contain angle brackets");
             }
             if (name.Contains("="))
             {
-                throw new System.ArgumentException("VCFHeaderLine: ID cannot contain an equals sign");
+                throw new ArgumentException("VCFHeaderLine: ID cannot contain an equals sign");
             }
 
             if (type == VCFHeaderLineType.Flag && count != 0)

@@ -33,7 +33,7 @@ namespace Bio.VCF
                 GenotypesContext newGenotypes = genotypes.subsetToSamples(sampleNames);
                 if (rederiveAllelesFromGenotypes)
                 {
-                    builder.SetAlleles(allelesOfGenotypes(newGenotypes));
+                    builder.SetAlleles(AllelesOfGenotypes(newGenotypes));
                 }
                 else
                 {

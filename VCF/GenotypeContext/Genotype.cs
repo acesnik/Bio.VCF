@@ -8,23 +8,45 @@ namespace Bio.VCF
 
     /// <summary>
     /// This class encompasses all the basic information about a genotype.  It is immutable.
-    /// TODO: Stench of java, remove all get/set non-sense later
+    /// 
+    /// Implmemented by LazyGenotype and FastGenotype.
     /// </summary>
     public abstract class Genotype : IComparable<Genotype>
-    //Class appears to be implemented by Lazy and Fast genotype
     {
-        #region STATIC MEMBERS
+
+        #region Public Static Fields
+
         /// <summary>
 		/// A list of genotype field keys corresponding to values we
 		/// manage inline in the Genotype object.  They must not appear in the
 		/// extended attributes map
 		/// </summary>
-		public static readonly string[] PRIMARY_KEYS = new string[] { VCFConstants.GENOTYPE_FILTER_KEY, VCFConstants.GENOTYPE_KEY, VCFConstants.GENOTYPE_QUALITY_KEY, VCFConstants.DEPTH_KEY, VCFConstants.GENOTYPE_ALLELE_DEPTHS, VCFConstants.GENOTYPE_PL_KEY };
-        public const string PHASED_ALLELE_SEPARATOR = "|";
-        public const string UNPHASED_ALLELE_SEPARATOR = "/";
+		public static readonly string[] PRIMARY_KEYS = new string[] 
+        {
+            VCFConstants.GENOTYPE_FILTER_KEY,
+            VCFConstants.GENOTYPE_KEY,
+            VCFConstants.GENOTYPE_QUALITY_KEY,
+            VCFConstants.DEPTH_KEY,
+            VCFConstants.GENOTYPE_ALLELE_DEPTHS,
+            VCFConstants.GENOTYPE_PL_KEY
+        };
 
         /// <summary>
-        /// a utility method for generating sorted strings from a map key set. </summary>
+        /// Character used for phased alleles.
+        /// </summary>
+        public const string PHASED_ALLELE_SEPARATOR = "|";
+
+        /// <summary>
+        /// Character used for unphased alleles.
+        /// </summary>
+        public const string UNPHASED_ALLELE_SEPARATOR = "/";
+
+        #endregion Public Static Fields
+
+        #region Protected Static Methods
+
+        /// <summary>
+        /// A utility method for generating sorted strings from a map key set. </summary>
         /// <param name="c"> the map </param>
         /// @param <T> the key type </param>
         /// @param <V> the value type </param>
@@ -35,6 +57,7 @@ namespace Bio.VCF
             var q = from kv in c orderby kv.Key select kv.Key + "=" + kv.Value.ToString();
             return "{" + String.Join(", ", q) + "}";
         }
+
         /// <summary>
         /// Returns a display name for field name with value v if this isn't -1.  Otherwise returns "" </summary>
         /// <param name="name"> of the field ("AD") </param>
@@ -44,6 +67,7 @@ namespace Bio.VCF
         {
             return v == -1 ? "" : " " + name + " " + v;
         }
+
         /// <summary>
         /// Returns a display name for field name with String value v if this isn't null.  Otherwise returns "" </summary>
         /// <param name="name"> of the field ("FT") </param>
@@ -53,6 +77,7 @@ namespace Bio.VCF
         {
             return v == null ? "" : " " + name + " " + v;
         }
+
         /// <summary>
         /// Returns a display name for field name with values vs if this isn't null.  Otherwise returns "" </summary>
         /// <param name="name"> of the field ("AD") </param>
@@ -79,6 +104,7 @@ namespace Bio.VCF
                 return b.ToString();
             }
         }
+
         /// <summary>
         /// Does the attribute map have a mapping involving a forbidden key (i.e.,
         /// one that's managed inline by this Genotypes object?
@@ -96,27 +122,28 @@ namespace Bio.VCF
             }
             return false;
         }
+
         protected internal static bool isForbiddenKey(string key)
         {
             return PRIMARY_KEYS.Contains(key);
         }
 
-        #endregion
+        #endregion Protected Static Methods
 
-        private readonly string sampleName;
-        private GenotypeType? type = null;
-        private readonly string filters;
-
+        #region Protected Constsructor
 
         protected internal Genotype(string sampleName, string filters)
         {
-            this.sampleName = sampleName;
-            this.filters = filters;
+            SampleName = sampleName;
+            Filters = filters;
         }
 
-        /// <returns> the alleles for this genotype.  Cannot be null.  May be empty </returns>
-        public abstract IList<Allele> Alleles { get; }
+        #endregion Protected Constsructor
 
+        #region Public Properties
+
+        /// <returns> The alleles for this genotype.  Cannot be null.  May be empty </returns>
+        public abstract IList<Allele> Alleles { get; }
 
         /// <summary>
         ///  The sequencing depth of this sample, or -1 if this value is missing
@@ -136,7 +163,6 @@ namespace Bio.VCF
         /// <returns> a pointer to the underlying PL data.  MUST NOT BE MODIFIED! </returns>
         public abstract int[] PL { get; }
 
-
         /// <summary>
         /// Are the alleles phased w.r.t. the global phasing system?
         /// </summary>
@@ -147,24 +173,6 @@ namespace Bio.VCF
         /// Returns the extended attributes for this object </summary>
         /// <returns> is never null, but is often isEmpty() </returns>
         public abstract IDictionary<string, object> ExtendedAttributes { get; }
-
-        /// <summary>
-        /// Get the ith allele in this genotype
-        /// </summary>
-        /// <param name="i"> the ith allele, must be < the ploidy, starting with 0 </param>
-        /// <returns> the allele at position i, which cannot be null </returns>
-        public abstract Allele getAllele(int i);
-
-        /// <summary>
-        /// Returns how many times allele appears in this genotype object?
-        /// </summary>
-        /// <param name="allele"> </param>
-        /// <returns> a value >= 0 indicating how many times the allele occurred in this sample's genotype </returns>
-        public virtual int countAllele(Allele allele)
-        {
-            return Alleles.Count(x => x.Equals(allele));
-        }
-
 
         /// <summary>
         /// What is the ploidy of this sample?
@@ -182,13 +190,7 @@ namespace Bio.VCF
         /// Returns the name associated with this sample.
         /// </summary>
         /// <returns> a non-null String </returns>
-        public string SampleName
-        {
-            get
-            {
-                return sampleName;
-            }
-        }
+        public string SampleName { get; private set; }
 
         /// <summary>
         /// Returns a phred-scaled quality score, or -1 if none is available
@@ -238,11 +240,32 @@ namespace Bio.VCF
 
         }
 
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // The type of this genotype
-        //
-        // ---------------------------------------------------------------------------------------------------------
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        /// Get the ith allele in this genotype
+        /// </summary>
+        /// <param name="i"> the ith allele, must be < the ploidy, starting with 0 </param>
+        /// <returns> the allele at position i, which cannot be null </returns>
+        public abstract Allele GetAllele(int i);
+
+        /// <summary>
+        /// Returns how many times allele appears in this genotype object?
+        /// </summary>
+        /// <param name="allele"> </param>
+        /// <returns> a value >= 0 indicating how many times the allele occurred in this sample's genotype </returns>
+        public virtual int CountAlleles(Allele allele)
+        {
+            return Alleles.Count(x => x.Equals(allele));
+        }
+
+        #endregion Public Methods
+
+        #region High-Level Type of Sample's Genotype
+
+        private GenotypeType? type = null;
 
         /// <returns> the high-level type of this sample's genotype </returns>
         public virtual GenotypeType Type
@@ -251,16 +274,17 @@ namespace Bio.VCF
             {
                 if (!type.HasValue)
                 {
-                    type = determineType();
+                    type = DetermineType();
                 }
                 return type.Value;
             }
         }
 
         /// <summary>
-        /// Internal code to determine the type of the genotype from the alleles vector </summary>
+        /// Internal code to determine the type of the genotype from the alleles vector
+        /// </summary>
         /// <returns> the type </returns>
-        protected internal virtual GenotypeType determineType() // we should never call if already calculated
+        protected internal virtual GenotypeType DetermineType() // we should never call if already calculated
         {
             // TODO -- this code is slow and could be optimized for the diploid case
             IList<Allele> alleles = Alleles;
@@ -302,42 +326,43 @@ namespace Bio.VCF
                 throw new Exception("BUG: there are no alleles present in this genotype but the alleles list is not null");
             }
 
-            return sawMultipleAlleles ? GenotypeType.HET : observedAllele.Reference ? GenotypeType.HOM_REF : GenotypeType.HOM_VAR;
+            return sawMultipleAlleles ? GenotypeType.HETEROZYGOUS : 
+                observedAllele.Reference ? GenotypeType.HOMOZYGOUS_REF : GenotypeType.HOMOZYGOUS_ALT;
         }
 
         /// <returns> true if all observed alleles are the same (regardless of whether they are ref or alt); if any alleles are no-calls, this method will return false. </returns>
-        public virtual bool Hom
+        public virtual bool Homozygous
         {
             get
             {
-                return HomRef || HomVar;
+                return HomozygousRef || HomozygousAlt;
             }
         }
 
         /// <returns> true if all observed alleles are ref; if any alleles are no-calls, this method will return false. </returns>
-        public virtual bool HomRef
+        public virtual bool HomozygousRef
         {
             get
             {
-                return Type == GenotypeType.HOM_REF;
+                return Type == GenotypeType.HOMOZYGOUS_REF;
             }
         }
 
         /// <returns> true if all observed alleles are alt; if any alleles are no-calls, this method will return false. </returns>
-        public virtual bool HomVar
+        public virtual bool HomozygousAlt
         {
             get
             {
-                return Type == GenotypeType.HOM_VAR;
+                return Type == GenotypeType.HOMOZYGOUS_ALT;
             }
         }
 
         /// <returns> true if we're het (observed alleles differ); if the ploidy is less than 2 or if any alleles are no-calls, this method will return false. </returns>
-        public virtual bool Het
+        public virtual bool Heterozygous
         {
             get
             {
-                return Type == GenotypeType.HET;
+                return Type == GenotypeType.HETEROZYGOUS;
             }
         }
 
@@ -377,11 +402,9 @@ namespace Bio.VCF
             }
         }
 
-        // ------------------------------------------------------------------------------
-        //
-        // methods for getting genotype likelihoods for a genotype object, if present
-        //
-        // ------------------------------------------------------------------------------
+        #endregion High-Level Type of Sample's Genotype
+
+        #region Genotype Likelihood Methods
 
         /// <returns> Returns true if this Genotype has PL field values </returns>
         public virtual bool hasLikelihoods()
@@ -444,11 +467,10 @@ namespace Bio.VCF
             }
         }
 
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // Many different string representations
-        //
-        // ---------------------------------------------------------------------------------------------------------
+        #endregion Genotype Likelihood Methods
+
+        #region Genotype String Representations
+
 
         /// <summary>
         /// Return a VCF-like string representation for the alleles of this genotype.
@@ -480,8 +502,10 @@ namespace Bio.VCF
             // 1. Make sure to use the appropriate separator depending on whether the genotype is phased
             // 2. If ignoreRefState is true, then we want just the bases of the Alleles (ignoring the '*' indicating a ref Allele)
             // 3. So that everything is deterministic with regards to integration tests, we sort Alleles (when the genotype isn't phased, of course)
-            return String.Join(Phased ? PHASED_ALLELE_SEPARATOR : UNPHASED_ALLELE_SEPARATOR, ignoreRefState ? AlleleStrings :
-                (Phased ? Alleles.Select(x => x.ToString()) : ParsingUtils.SortList(Alleles).Select(x => x.ToString())));
+            return String.Join(
+                Phased ? PHASED_ALLELE_SEPARATOR : UNPHASED_ALLELE_SEPARATOR, 
+                ignoreRefState ? AlleleStrings :
+                    (Phased ? Alleles.Select(x => x.ToString()) : ParsingUtils.SortList(Alleles).Select(x => x.ToString())));
         }
 
         /// <summary>
@@ -502,21 +526,19 @@ namespace Bio.VCF
             }
         }
 
-        public virtual string ToString()
+        public override string ToString()
         {
             return string.Format("[{0} {1}{2}{3}{4}{5}{6}{7}]", SampleName, getGenotypeString(false), toStringIfExists(VCFConstants.GENOTYPE_QUALITY_KEY, GQ), toStringIfExists(VCFConstants.DEPTH_KEY, DP), toStringIfExists(VCFConstants.GENOTYPE_ALLELE_DEPTHS, AD), toStringIfExists(VCFConstants.GENOTYPE_PL_KEY, PL), toStringIfExists(VCFConstants.GENOTYPE_FILTER_KEY, Filters), sortedString(ExtendedAttributes));
         }
 
-        public virtual string toBriefString()
+        public virtual string ToBriefString()
         {
             return string.Format("{0}:Q{1:D}", getGenotypeString(false), GQ);
         }
 
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // Comparison operations
-        //
-        // ---------------------------------------------------------------------------------------------------------
+        #endregion Genotype String Representations
+
+        #region Comparison Operations
 
         /// <summary>
         /// comparable genotypes -> compareTo on the sample names </summary>
@@ -527,16 +549,16 @@ namespace Bio.VCF
             return SampleName.CompareTo(genotype.SampleName);
         }
 
-        public virtual bool sameGenotype(Genotype other)
+        public virtual bool SameGenotype(Genotype other)
         {
-            return sameGenotype(other, true);
+            return SameGenotype(other, true);
         }
 
-        public virtual bool sameGenotype(Genotype other, bool ignorePhase)
+        public virtual bool SameGenotype(Genotype other, bool ignorePhase)
         {
             if (Ploidy != other.Ploidy)
             {
-                return false; // gotta have the same number of allele to be equal
+                return false; // gotta have the same number of alleles to be equal
             }
 
             // By default, compare the elements in the lists of alleles, element-by-element
@@ -552,13 +574,9 @@ namespace Bio.VCF
             return thisAlleles.Equals(otherAlleles);
         }
 
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // get routines for extended attributes
-        //
-        // ---------------------------------------------------------------------------------------------------------
+        #endregion Comparison Operations
 
-
+        #region Extended Attribute Methods
 
         /// <summary>
         /// Is key associated with a value (even a null one) in the extended attributes?
@@ -578,7 +596,7 @@ namespace Bio.VCF
         /// <param name="key"> a non-null string key to fetch a value for </param>
         /// <param name="defaultValue"> the value to return if key isn't in the extended attributes </param>
         /// <returns> a value (potentially) null associated with key, or defaultValue if no association exists </returns>
-        public virtual object getExtendedAttribute(string key, object defaultValue)
+        public virtual object GetExtendedAttribute(string key, object defaultValue)
         {
             return HasExtendedAttribute(key) ? ExtendedAttributes[key] : defaultValue;
         }
@@ -590,7 +608,7 @@ namespace Bio.VCF
         /// @return </param>
         public virtual object GetExtendedAttribute(string key)
         {
-            return getExtendedAttribute(key, null);
+            return GetExtendedAttribute(key, null);
         }
 
         /// <summary>
@@ -600,13 +618,7 @@ namespace Bio.VCF
         ///   If the result != null, then the genotype has failed filtering for the reason(s)
         ///   specified in result.  To be reference compliant multiple filter field
         ///   string values can be encoded with a ; separator. </returns>
-        public string Filters
-        {
-            get
-            {
-                return filters;
-            }
-        }
+        public string Filters { get; private set; }
 
         /// <summary>
         /// Is this genotype filtered or not?
@@ -619,7 +631,6 @@ namespace Bio.VCF
                 return Filters != null;
             }
         }
-
 
         /// <summary>
         /// A totally generic getter, that allows you to specific keys that correspond
@@ -655,6 +666,7 @@ namespace Bio.VCF
                 return GetExtendedAttribute(key);
             }
         }
+
         public virtual bool hasAnyAttribute(string key)
         {
             if (key == VCFConstants.GENOTYPE_KEY)
@@ -682,21 +694,19 @@ namespace Bio.VCF
                 return HasExtendedAttribute(key);
             }
         }
+
         // TODO -- add getAttributesAsX interface here
 
-        // ------------------------------------------------------------------------------
-        //
-        // private utilities
-        //
-        // ------------------------------------------------------------------------------
+        #endregion Extended Attribute Methods
 
+        #region Obselete Members
 
-        #region OBSOLETE_MEMBERS
         [Obsolete]
         public virtual bool hasLog10PError()
         {
             return HasGQ;
         }
+
         [Obsolete]
         public virtual double Log10PError
         {
@@ -705,6 +715,7 @@ namespace Bio.VCF
                 return GQ / -10.0;
             }
         }
+
         [Obsolete]
         public virtual int PhredScaledQual
         {
@@ -713,6 +724,7 @@ namespace Bio.VCF
                 return GQ;
             }
         }
+
         [Obsolete]
         public virtual string getAttributeAsString(string key, string defaultValue)
         {
@@ -727,6 +739,7 @@ namespace Bio.VCF
             }
             return Convert.ToString(x); // throws an exception if this isn't a string
         }
+
         [Obsolete]
         public virtual int getAttributeAsInt(string key, int defaultValue)
         {
@@ -741,6 +754,7 @@ namespace Bio.VCF
             }
             return Convert.ToInt32((string)x); // throws an exception if this isn't a string
         }
+
         [Obsolete]
         public virtual double getAttributeAsDouble(string key, double defaultValue)
         {
@@ -755,7 +769,8 @@ namespace Bio.VCF
             }
             return Convert.ToDouble((string)x); // throws an exception if this isn't a string
         }
-        #endregion 
+
+        #endregion Obselete Members
 
     }
 }

@@ -90,7 +90,7 @@ namespace Bio.VCF
 			// null alleles are no longer allowed
 			if (WouldBeNullAllele(bases))
 			{
-				throw new System.ArgumentException("Null alleles are not supported");
+				throw new ArgumentException("Null alleles are not supported");
 			}
 
 			// no-calls are represented as no bases
@@ -100,7 +100,7 @@ namespace Bio.VCF
 				isNoCall = true;
 				if (isRef)
 				{
-					throw new System.ArgumentException("Cannot tag a NoCall allele as the reference allele");
+					throw new ArgumentException("Cannot tag a NoCall allele as the reference allele");
 				}
 				return;
 			}
@@ -110,7 +110,7 @@ namespace Bio.VCF
 				isSymbolic = true;
 				if (isRef)
 				{
-					throw new System.ArgumentException("Cannot tag a symbolic allele as the reference allele");
+					throw new ArgumentException("Cannot tag a symbolic allele as the reference allele");
 				}
 			}
 			else
@@ -121,7 +121,7 @@ namespace Bio.VCF
 			this.bases = bases;
 			if (!AcceptableAlleleBases(bases))
 			{
-				throw new System.ArgumentException("Unexpected base in allele bases \'" + convertbyte(bases) + "\'");
+				throw new ArgumentException("Unexpected base in allele bases \'" + convertbyte(bases) + "\'");
 			}
 		}
         string convertbyte(byte[] bases)
@@ -193,7 +193,7 @@ namespace Bio.VCF
 		{
 			if (bases == null)
 			{
-				throw new System.ArgumentException("create: the Allele base string cannot be null; use new Allele() or new Allele(\"\") to create a Null allele");
+				throw new ArgumentException("create: the Allele base string cannot be null; use new Allele() or new Allele(\"\") to create a Null allele");
 			}
 
 			if (bases.Length == 1)
@@ -204,7 +204,7 @@ namespace Bio.VCF
 					case (byte)'.':
 						if (isRef)
 						{
-							throw new System.ArgumentException("Cannot tag a NoCall allele as the reference allele");
+							throw new ArgumentException("Cannot tag a NoCall allele as the reference allele");
 						}
 						return NO_CALL;
                     case (byte)'A':
@@ -223,7 +223,7 @@ namespace Bio.VCF
                     case (byte)'n':
 					    return isRef ? REF_N : ALT_N;
 					default:
-						throw new System.ArgumentException("Illegal base [" + (char)bases[0] + "] seen in the allele");
+						throw new ArgumentException("Illegal base [" + (char)bases[0] + "] seen in the allele");
 				}
 			}
 			else
@@ -246,7 +246,7 @@ namespace Bio.VCF
 		{
 			if (left.Symbolic)
 			{
-				throw new System.ArgumentException("Cannot extend a symbolic allele");
+				throw new ArgumentException("Cannot extend a symbolic allele");
 			}
 			byte[] bases = new byte[left.Length + right.Length];
 			Array.Copy(left.Bases, 0, bases, 0, left.Length);

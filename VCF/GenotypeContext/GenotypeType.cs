@@ -12,13 +12,13 @@ namespace Bio.VCF
         NO_CALL = 0,
         /// <summary>
         /// The sample is homozygous reference </summary>
-        HOM_REF = 1,
+        HOMOZYGOUS_REF = 1,
         /// <summary>
         /// The sample is heterozygous, with at least one ref and at least one one alt in any order </summary>
-        HET = 2,
+        HETEROZYGOUS = 2,
         /// <summary>
         /// All alleles are non-reference </summary>
-        HOM_VAR = 3,
+        HOMOZYGOUS_ALT = 3,
         /// <summary>
         /// There is no allele data availble for this sample (alleles.isEmpty) </summary>
         UNAVAILABLE = 4,

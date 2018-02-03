@@ -212,7 +212,7 @@ namespace Bio.VCF
             writeHeader(header);
             foreach (var vc in variants)
             {
-                writer.Write(getVariantLinetoWrite(vc));
+                writer.Write(GetVariantLinetoWrite(vc));
             }
             writer.Close();
         }
@@ -242,7 +242,7 @@ namespace Bio.VCF
         /// Add a record to the file
         /// </summary>
         /// <param name="vc">The Variant Context object </param>
-        protected string getVariantLinetoWrite(VariantContext vc)
+        protected string GetVariantLinetoWrite(VariantContext vc)
         {
 
             if (doNotWriteGenotypes)
@@ -515,11 +515,11 @@ namespace Bio.VCF
                             throw new Exception("GTs cannot be missing for some samples if they are available for others in the record");
                         }
 
-                        sbn.Append(getAlleleText(g.getAllele(0), alleleMap));
+                        sbn.Append(getAlleleText(g.GetAllele(0), alleleMap));
                         for (int i = 1; i < g.Ploidy; i++)
                         {
                             sbn.Append(g.Phased ? VCFConstants.PHASED : VCFConstants.UNPHASED);
-                            sbn.Append(getAlleleText(g.getAllele(i), alleleMap));
+                            sbn.Append(getAlleleText(g.GetAllele(i), alleleMap));
                         }
                         continue;
                     }

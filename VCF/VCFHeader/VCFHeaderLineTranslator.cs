@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -172,13 +173,13 @@ namespace Bio.VCF
             index = 0;
             if (tagIndex != expectedTagOrder.Length)
             {
-                throw new System.ArgumentException("Unexpected tag count " + tagIndex + ", we expected " + expectedTagOrder.Length);
+                throw new ArgumentException("Unexpected tag count " + tagIndex + ", we expected " + expectedTagOrder.Length);
             }
             foreach (string str in ret.Keys)
             {
                 if (!expectedTagOrder[index].Equals(str))
                 {
-                    throw new System.ArgumentException("Unexpected tag " + str + " in string " + valueLine);
+                    throw new ArgumentException("Unexpected tag " + str + " in string " + valueLine);
                 }
                 index++;
             }

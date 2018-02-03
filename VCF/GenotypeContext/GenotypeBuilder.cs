@@ -23,34 +23,38 @@ namespace Bio.VCF
     /// </summary>
     public sealed class GenotypeBuilder
     {
-        #region STATIC STUFF
+
+        #region Private Static Fields
+
         private static readonly List<Allele> HAPLOID_NO_CALL = new List<Allele>() { Allele.NO_CALL };
         private static readonly List<Allele> DIPLOID_NO_CALL = new List<Allele>() { Allele.NO_CALL, Allele.NO_CALL };
         private static readonly Dictionary<string, object> NO_ATTRIBUTES = new Dictionary<string, object>();
         private static readonly ReadOnlyCollection<Allele> HAPLOID_NO_CALL_READONLY = HAPLOID_NO_CALL.AsReadOnly();
         private static readonly ReadOnlyCollection<Allele> DIPLOID_NO_CALL_READONLY = DIPLOID_NO_CALL.AsReadOnly();
 
-        // -----------------------------------------------------------------
-        //
-        // Factory methods
-        //
-        // -----------------------------------------------------------------
+        #endregion Private Static Fields
+
+        #region Factory methods
+
         public static Genotype Create(string sampleName, List<Allele> alleles)
         {
             return (new GenotypeBuilder(sampleName, alleles)).Make();
         }
+
         public static Genotype Create(string sampleName, List<Allele> alleles, Dictionary<string, object> attributes)
         {
             var gb = new GenotypeBuilder(sampleName, alleles);
             gb.AddAttributes(attributes);
             return gb.Make();
         }
-        protected internal static Genotype Create(string sampleName, List<Allele> alleles, double[] gls)
+
+        public static Genotype Create(string sampleName, List<Allele> alleles, double[] gls)
         {
             var gb = new GenotypeBuilder(sampleName, alleles);
-            gb.setPL(gls);
+            gb.SetPL(gls);
             return gb.Make();
         }
+
         /// <summary>
         /// Create a new Genotype object for a sample that's missing from the VC (i.e., in
         /// the output header).  Defaults to a diploid no call genotype ./.
@@ -65,9 +69,11 @@ namespace Bio.VCF
                 case 1:
                     als = HAPLOID_NO_CALL_READONLY;
                     break;
+
                 case 2:
                     als = DIPLOID_NO_CALL_READONLY;
                     break;
+
                 default:
                     als = Enumerable.Range(0, ploidy).Select(x => Allele.NO_CALL).ToList().AsReadOnly();
                     break;
@@ -75,12 +81,15 @@ namespace Bio.VCF
             Dictionary<string, object> ea = NO_ATTRIBUTES;
             return new FastGenotype(sampleName, als, false, -1, -1, null, null, null, ea);
         }
-        #endregion
+
+        #endregion Factory Methods
 
         private Dictionary<string, object> extendedAttributes = null;
         private string filters_Renamed;
         //TODO: What is this point of this?
         private int initialAttributeMapSize = 5;
+
+        #region Constructors
 
         /// <summary>
         /// Create a empty builder.  Both a sampleName and alleles must be provided
@@ -97,6 +106,7 @@ namespace Bio.VCF
                 Alleles = new List<Allele>();
             }
         }
+
         /// <summary>
         /// Create a builder using sampleName.  Alleles must be provided
         /// before trying to make a Genotype from this builder. </summary>
@@ -105,6 +115,7 @@ namespace Bio.VCF
         {
             SampleName = sampleName;
         }
+
         /// <summary>
         /// Make a builder using sampleName and alleles for starting values </summary>
         /// <param name="sampleName"> </param>
@@ -114,6 +125,7 @@ namespace Bio.VCF
             SampleName = sampleName;
             Alleles = alleles;
         }
+
         /// <summary>
         /// Create a new builder starting with the values in Genotype g </summary>
         /// <param name="g"> </param>
@@ -121,6 +133,7 @@ namespace Bio.VCF
         {
             copy(g);
         }
+
         /// <summary>
         /// Copy all of the values for this builder from Genotype g 
         /// </summary>
@@ -140,6 +153,11 @@ namespace Bio.VCF
             AddAttributes(g.ExtendedAttributes);
             return this;
         }
+
+        #endregion Constructors
+
+        #region Public Methods
+
         /// <summary>
         /// Reset all of the builder attributes to their defaults.  After this
         /// function you must provide sampleName and alleles before trying to
@@ -160,6 +178,7 @@ namespace Bio.VCF
             filters_Renamed = null;
             extendedAttributes = null;
         }
+
         /// <summary>
         /// Create a new Genotype object using the values set in this builder.
         /// 
@@ -175,15 +194,16 @@ namespace Bio.VCF
             { ea = NO_ATTRIBUTES; }
             else { ea = extendedAttributes; }
             return new FastGenotype(SampleName, pAlleles, Phased, GQ, DP, AD, PL, filters_Renamed, ea);
-        }
+        } 
+
+        #endregion Public Methods
+
         /// <summary>
         /// Set this genotype's name </summary>
         /// <param name="sampleName">
         /// @return </param>
-        public string SampleName
-        {
-            get; set;
-        }
+        public string SampleName { get; set; }
+
         private List<Allele> pAlleles;
         /// <summary>
         /// Set this genotype's alleles </summary>
@@ -204,76 +224,50 @@ namespace Bio.VCF
                 this.pAlleles = value;
             }
         }
+
+        #region Public Genotype Properties
+
         /// <summary>
-        /// Is this genotype phased? </summary>
+        /// Is this genotype phased? 
+        /// </summary>
         /// <param name="phased">
         /// @return </param>
-        public bool Phased
-        { get; set; }
-        public int GQ
-        {
-            get; set;
-        }
+        public bool Phased { get; set; }
+
         /// <summary>
-        /// This genotype has no GQ value
-        /// @return
+        /// Conditional genotype quality, encoded as a phred quality -10log(10) p
         /// </summary>
-        public void noGQ()
-        {
-            GQ = -1;
-        }
-        /// <summary>
-        /// This genotype has no AD value
-        /// @return
-        /// </summary>
-        public void noAD()
-        {
-            AD = null;
-        }
-        /// <summary>
-        /// This genotype has no DP value
-        /// @return
-        /// </summary>
-        public void noDP()
-        {
-            DP = -1;
-        }
-        /// <summary>
-        /// This genotype has no PL value
-        /// @return
-        /// </summary>
-        public void noPL()
-        {
-            PL = null;
-        }
+        public int GQ { get; set; }
+
         /// <summary>
         /// This genotype has this DP value
         /// @return
         /// </summary>
-        public int DP
-        {
-            get; set;
-        }
+        public int DP { get; set; }
+
         /// <summary>
         /// This genotype has this AD value
         /// @return
         /// </summary>
-        public int[] AD
-        { get; set; }
+        public int[] AD { get; set; }
+
         /// <summary>
         /// This genotype has this PL value, as int[].  FAST
         /// </summary>
-        public int[] PL
-        {
-            get; set;
-        }
+        public int[] PL { get; set; }
+
+        #endregion Public Genotype Properties
+
+        #region Public Genotype Methods
+
         /// <summary>
         /// This genotype has this PL value, converted from double[]. SLOW
         /// </summary>
-        public void setPL(double[] GLs)
+        public void SetPL(double[] GLs)
         {
-            this.PL = GenotypeLikelihoods.fromLog10Likelihoods(GLs).AsPLs;
+            this.PL = GenotypeLikelihoods.fromLog10Likelihoods(GLs).AsPLs();
         }
+
         /// <summary>
         /// This genotype has these attributes.
         /// 
@@ -286,13 +280,15 @@ namespace Bio.VCF
                 AddAttribute(pair.Key, pair.Value);
             }
         }
+
         /// <summary>
         /// Tells this builder to remove all extended attributes
         /// </summary>
-        public void noAttributes()
+        public void NoAttributes()
         {
             this.extendedAttributes = null;
         }
+
         /// <summary>
         /// This genotype has this attribute key / value pair.
         /// 
@@ -300,12 +296,32 @@ namespace Bio.VCF
         /// </summary>
         public void AddAttribute(string key, object value)
         {
-            if (extendedAttributes == null)
-            {
-                extendedAttributes = new Dictionary<string, object>(initialAttributeMapSize);
-            }
+            extendedAttributes = extendedAttributes ?? new Dictionary<string, object>(initialAttributeMapSize);
             extendedAttributes[key] = value;
         }
+
+        #endregion Public Genotype Methods
+
+        #region Public Filter Property
+
+        /// <summary>
+        /// Most efficient version of setting filters -- just set the filters string to filters
+        /// </summary>
+        /// <param name="filter"> if filters == null or filters.equals("PASS") => genotype is PASS
+        /// @return </param>
+        public string Filter
+        {
+            set
+            {
+                this.filters_Renamed = VCFConstants.PASSES_FILTERS_v4.Equals(value) ? null : value;
+            }
+
+        }
+
+        #endregion Public Filter Property
+
+        #region Public Filter Methods
+
         /// <summary>
         /// Tells this builder to make a Genotype object that has had filters applied,
         /// which may be empty (passes) or have some value indicating the reasons
@@ -328,6 +344,7 @@ namespace Bio.VCF
                 Filter = String.Join(";", filters);
             }
         }
+
         /// <summary>
         /// varargs version of #filters </summary>
         /// <param name="filters">
@@ -335,34 +352,24 @@ namespace Bio.VCF
         {
             SetFilters(filters.ToList());
         }
-        /// <summary>
-        /// Most efficient version of setting filters -- just set the filters string to filters
-        /// </summary>
-        /// <param name="filter"> if filters == null or filters.equals("PASS") => genotype is PASS
-        /// @return </param>
-        public string Filter
-        {
-            set
-            {
-                this.filters_Renamed = VCFConstants.PASSES_FILTERS_v4.Equals(value) ? null : value;
-            }
 
-        }
         /// <summary>
         /// This genotype is unfiltered
-        /// 
-        /// @return
         /// </summary>
-        public void SetUnFiltered()
+        public void SetUnfiltered()
         {
             Filter = null;
         }
+
         /// <summary>
-        /// Tell's this builder that we have at most these number of attributes
+        /// Tells this builder that we have at most these number of attributes
         /// </summary>
         public void MaxAttributes(int i)
         {
             initialAttributeMapSize = i;
         }
+
+        #endregion Public Filter Methods
+
     }
 }

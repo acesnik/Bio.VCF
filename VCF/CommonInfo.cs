@@ -43,7 +43,7 @@ namespace Bio.VCF
             {
                 if (value == null)
                 {
-                    throw new System.ArgumentException("Name cannot be null " + this);
+                    throw new ArgumentException("Name cannot be null " + this);
                 }
                 this.name = value;
             }
@@ -103,11 +103,11 @@ namespace Bio.VCF
 
             if (filter == null)
             {
-                throw new System.ArgumentException("BUG: Attempting to add null filter " + this);
+                throw new ArgumentException("BUG: Attempting to add null filter " + this);
             }
             if (Filters.Contains(filter))
             {
-                throw new System.ArgumentException("BUG: Attempting to add duplicate filter " + filter + " at " + this);
+                throw new ArgumentException("BUG: Attempting to add duplicate filter " + filter + " at " + this);
             }
             filters.Add(filter);
         }
@@ -116,7 +116,7 @@ namespace Bio.VCF
         {
             if (filters == null)
             {
-                throw new System.ArgumentException("BUG: Attempting to add null filters at" + this);
+                throw new ArgumentException("BUG: Attempting to add null filters at" + this);
             }
             foreach (string f in filters)
             {
@@ -146,15 +146,15 @@ namespace Bio.VCF
             {
                 if (value > 0 && value != NO_LOG10_PERROR)
                 {
-                    throw new System.ArgumentException("BUG: log10PError cannot be > 0 : " + this.log10PError);
+                    throw new ArgumentException("BUG: log10PError cannot be > 0 : " + this.log10PError);
                 }
                 if (double.IsInfinity(this.log10PError))
                 {
-                    throw new System.ArgumentException("BUG: log10PError should not be Infinity");
+                    throw new ArgumentException("BUG: log10PError should not be Infinity");
                 }
                 if (double.IsNaN(this.log10PError))
                 {
-                    throw new System.ArgumentException("BUG: log10PError should not be NaN");
+                    throw new ArgumentException("BUG: log10PError should not be NaN");
                 }
                 this.log10PError = value;
             }

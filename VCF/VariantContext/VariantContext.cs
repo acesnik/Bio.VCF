@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace Bio.VCF
 {
+
     /// <summary>
     /// Class VariantContext
     /// 
@@ -179,6 +180,31 @@ namespace Bio.VCF
     [DebuggerDisplay("{contig}:{start}")]
     public partial class VariantContext
     {
+
+        #region Static Fields and Enum
+
+        protected const bool WARN_ABOUT_BAD_END = true;
+        protected const int MAX_ALLELE_SIZE_FOR_NON_SV = 150;
+        public static readonly GenotypesContext NO_GENOTYPES = GenotypesContext.NO_GENOTYPES;
+        protected static readonly Validation NO_VALIDATION = Validation.NONE;
+        public const double NO_LOG10_PERROR = CommonInfo.NO_LOG10_PERROR;
+        public static readonly ISet<string> PASSES_FILTERS = new LinkedHashSet<string>(true);
+
+        /// <summary>
+        /// Validation mode
+        /// </summary>
+        [Flags]
+        public enum Validation
+        {
+            NONE = 0,
+            ALLELES = 1,
+            GENOTYPES = 2
+        }
+
+        #endregion Static Fields and Enum
+
+        #region Public Properties and Fields
+
         /// <summary>
         /// The location of this VariantContext </summary>
         protected internal readonly string contig;
@@ -215,18 +241,19 @@ namespace Bio.VCF
             private set;
         }
 
+        public bool HasID
+        {
+            get
+            {
+                return ID != VCFConstants.EMPTY_ID_FIELD;
+            }
+        }
+
         public CommonInfo CommonInfo
         {
             get;
             protected internal set;
         }
-
-        /// <summary>
-        /// The type (cached for performance reasons) of this context </summary>
-        protected internal VariantType? type = null;
-        /// <summary>
-        /// A set of the alleles segregating in this context </summary>
-        protected internal readonly IList<Allele> alleles;
 
         /// <summary>
         /// Gets the alleles.  This method should return all of the alleles present at the location,
@@ -243,17 +270,46 @@ namespace Bio.VCF
         }
 
         /// <summary>
+        /// The type (cached for performance reasons) of this context 
+        /// </summary>
+        protected internal VariantType? type = null;
+
+        /// <summary>
+        /// A set of the alleles segregating in this context 
+        /// </summary>
+        protected internal readonly IList<Allele> alleles;
+
+
+        /// <summary>
         /// A mapping from sampleName -> genotype objects for all genotypes associated with this context </summary>
         protected internal GenotypesContext genotypes = null;
+
         /// <summary>
         /// Counts for each of the possible Genotype types in this context </summary>
         protected internal int[] genotypeCounts = null;
-        // a fast cached access point to the ref / alt alleles for biallelic case
+
+        #endregion Public Properties and Fields
+
+        #region Private Fields
+
+        /// <summary>
+        /// a fast cached access point to the ref / alt alleles for biallelic case
+        /// </summary>
         private Allele REF = null;
-        // set to the alt allele when biallelic, otherwise == null
+
+        /// <summary>
+        /// set to the alt allele when biallelic, otherwise == null
+        /// </summary>
         private Allele ALT = null;
-        /* cached monomorphic value: null -> not yet computed, False, True */
+
+        /// <summary>
+        /// cached monomorphic value: null -> not yet computed, False, True 
+        /// </summary>
         private bool? monomorphic = null;
+
+        #endregion Private Fields
+
+        #region Constructors
 
         /// <summary>
         /// Copy constructor
@@ -332,16 +388,16 @@ namespace Bio.VCF
             this.FullyDecoded = fullyDecoded;
             validate(validationToPerform);
         }
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // Selectors
-        //
-        // ---------------------------------------------------------------------------------------------------------
+
+        #endregion Constructors
+
+        #region Public Methods
+
         /// <summary>
         /// helper routine for subcontext </summary>
         /// <param name="genotypes"> genotypes </param>
         /// <returns> allele set </returns>
-        private ISet<Allele> allelesOfGenotypes(ICollection<Genotype> genotypes)
+        private ISet<Allele> AllelesOfGenotypes(ICollection<Genotype> genotypes)
         {
             ISet<Allele> alleles = new HashSet<Allele>();
             bool addedref = false;
@@ -356,6 +412,7 @@ namespace Bio.VCF
                     }
                 }
             }
+
             if (!addedref)
             {
                 alleles.Add(Reference);
@@ -363,6 +420,8 @@ namespace Bio.VCF
 
             return alleles;
         }
+
+        #endregion Public Methods
 
         #region Type Operations
 
@@ -579,23 +638,8 @@ namespace Bio.VCF
 
         #endregion
 
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // Generic accessors
-        //
-        // ---------------------------------------------------------------------------------------------------------
-        public bool HasID
-        {
-            get
-            {
-                return ID != VCFConstants.EMPTY_ID_FIELD;
-            }
-        }
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // get routines to access context info fields
-        //
-        // ---------------------------------------------------------------------------------------------------------
+        #region Common Information of VCF Entry
+    
         public string Source
         {
             get
@@ -711,11 +755,11 @@ namespace Bio.VCF
         {
             return CommonInfo.getAttributeAsBoolean(key, defaultValue);
         }
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // Working with alleles
-        //
-        // ---------------------------------------------------------------------------------------------------------
+
+        #endregion Common Information of VCF Entry
+
+        #region Allele Methods
+
         /// <returns> the reference allele for this context </returns>
         public Allele Reference
         {
@@ -728,88 +772,6 @@ namespace Bio.VCF
                 }
                 return refe;
             }
-        }
-
-        /// <returns> true if the context is strictly bi-allelic </returns>
-        public bool Biallelic
-        {
-            get
-            {
-                return NAlleles == 2;
-            }
-        }
-
-        /// <returns> The number of segregating alleles in this context </returns>
-        public int NAlleles
-        {
-            get
-            {
-                return alleles.Count;
-            }
-        }
-
-        /// <summary>
-        /// Returns the maximum ploidy of all samples in this VC, or default if there are no genotypes
-        /// 
-        /// This function is caching, so it's only expensive on the first call
-        /// </summary>
-        /// <param name="defaultPloidy"> the default ploidy, if all samples are no-called </param>
-        /// <returns> default, or the max ploidy </returns>
-        public int GetMaxPloidy(int defaultPloidy)
-        {
-            return genotypes.getMaxPloidy(defaultPloidy);
-        }
-
-        /// <returns> The allele sharing the same bases as this String.  A convenience method; better to use byte[] </returns>
-        public Allele GetAllele(string allele)
-        {
-            return GetAllele(VCFUtils.StringToBytes(allele));
-        }
-
-        /// <returns> The allele sharing the same bases as this byte[], or null if no such allele is present. </returns>
-        public Allele GetAllele(byte[] allele)
-        {
-            return Allele.GetMatchingAllele(Alleles, allele);
-        }
-
-        /// <returns> True if this context contains Allele allele, or false otherwise </returns>
-        public bool HasAllele(Allele allele)
-        {
-            return hasAllele(allele, false, true);
-        }
-
-        public bool HasAllele(Allele allele, bool ignoreRefState)
-        {
-            return hasAllele(allele, ignoreRefState, true);
-        }
-
-        public bool HasAlternateAllele(Allele allele)
-        {
-            return hasAllele(allele, false, false);
-        }
-
-        public bool HasAlternateAllele(Allele allele, bool ignoreRefState)
-        {
-            return hasAllele(allele, ignoreRefState, false);
-        }
-
-        private bool hasAllele(Allele allele, bool ignoreRefState, bool considerRefAllele)
-        {
-            if ((considerRefAllele && allele == REF) || allele == ALT)
-            { // optimization for cached cases
-                return true;
-            }
-
-            IList<Allele> allelesToConsider = considerRefAllele ? Alleles : AlternateAlleles;
-            foreach (Allele a in allelesToConsider)
-            {
-                if (a.Equals(allele, ignoreRefState))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -852,6 +814,96 @@ namespace Bio.VCF
             }
         }
 
+        /// <returns> true if the context is strictly bi-allelic </returns>
+        public bool Biallelic
+        {
+            get
+            {
+                return NAlleles == 2;
+            }
+        }
+
+        /// <returns> The number of segregating alleles in this context </returns>
+        public int NAlleles
+        {
+            get
+            {
+                return alleles.Count;
+            }
+        }
+
+        /// <summary>
+        /// Returns the maximum ploidy of all samples in this VC, or default if there are no genotypes
+        /// 
+        /// This function is caching, so it's only expensive on the first call
+        /// </summary>
+        /// <param name="defaultPloidy"> the default ploidy, if all samples are no-called </param>
+        /// <returns> default, or the max ploidy </returns>
+        public int GetMaxPloidy(int defaultPloidy)
+        {
+            return genotypes.getMaxPloidy(defaultPloidy);
+        }
+
+        /// <summary>
+        /// The allele sharing the same bases as this String.  A convenience method; better to use byte[]
+        /// </summary>
+        /// <param name="allele"></param>
+        /// <returns></returns>
+        public Allele GetAllele(string allele)
+        {
+            return GetAllele(VCFUtils.StringToBytes(allele));
+        }
+
+        /// <summary>
+        /// The allele sharing the same bases as this byte[], or null if no such allele is present.
+        /// </summary>
+        /// <param name="allele"></param>
+        /// <returns></returns>
+        public Allele GetAllele(byte[] allele)
+        {
+            return Allele.GetMatchingAllele(Alleles, allele);
+        }
+
+        /// <returns> True if this context contains Allele allele, or false otherwise </returns>
+        public bool HasAllele(Allele allele)
+        {
+            return HasAllele(allele, false, true);
+        }
+
+        public bool HasAllele(Allele allele, bool ignoreRefState)
+        {
+            return HasAllele(allele, ignoreRefState, true);
+        }
+
+        public bool HasAlternateAllele(Allele allele)
+        {
+            return HasAllele(allele, false, false);
+        }
+
+        public bool HasAlternateAllele(Allele allele, bool ignoreRefState)
+        {
+            return HasAllele(allele, ignoreRefState, false);
+        }
+
+        private bool HasAllele(Allele allele, bool ignoreRefState, bool considerRefAllele)
+        {
+            if ((considerRefAllele && allele == REF) || allele == ALT)
+            { // optimization for cached cases
+                return true;
+            }
+
+            IList<Allele> allelesToConsider = considerRefAllele ? Alleles : AlternateAlleles;
+            foreach (Allele a in allelesToConsider)
+            {
+                if (a.Equals(allele, ignoreRefState))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <param name="i"> -- the ith allele (from 0 to n - 2 for a context with n alleles including a reference allele) </param>
         /// <returns> the ith non-reference allele in this context </returns>
         /// <exception cref="IllegalArgumentException"> if i is invalid </exception>
@@ -891,11 +943,64 @@ namespace Bio.VCF
 
             return true;
         }
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // Working with genotypes
-        //
-        // ---------------------------------------------------------------------------------------------------------
+
+        public bool HasSymbolicAlleles()
+        {
+            return HasSymbolicAlleles(Alleles);
+        }
+
+        public static bool HasSymbolicAlleles(IList<Allele> alleles)
+        {
+            return alleles.Any(x => x.Symbolic);
+        }
+
+        public Allele AltAlleleWithHighestAlleleCount
+        {
+            get
+            {
+                // optimization: for bi-allelic sites, just return the 1only alt allele
+                if (Biallelic)
+                {
+                    return GetAlternateAllele(0);
+                }
+                return AlternateAlleles.MaxBy(a => GetCalledChrCount(a));
+            }
+        }
+
+        /// <summary>
+        /// Lookup the index of allele in this variant context
+        /// </summary>
+        /// <param name="allele"> the allele whose index we want to get </param>
+        /// <returns> the index of the allele into getAlleles(), or -1 if it cannot be found </returns>
+        public int GetAlleleIndex(Allele allele)
+        {
+            return Alleles.IndexOf(allele);
+        }
+
+        /// <summary>
+        /// Return the allele index #getAlleleIndex for each allele in alleles
+        /// </summary>
+        /// <param name="alleles"> the alleles we want to look up </param>
+        /// <returns> a list of indices for each allele, in order </returns>
+        public IList<int> GetAlleleIndices(ICollection<Allele> alleles)
+        {
+            return alleles.Select(x => GetAlleleIndex(x)).ToList();
+        }
+
+        public int[] GetGLIndecesOfAlternateAllele(Allele targetAllele)
+        {
+            int index = GetAlleleIndex(targetAllele);
+            if (index == -1)
+            {
+                throw new ArgumentException("Allele " + targetAllele + " not in this VariantContex " + this);
+            }
+            return GenotypeLikelihoods.getPLIndecesOfAlleles(0, index);
+        }
+
+        #endregion Allele Methods
+
+        #region Genotype Methods
+
         /// <returns> the number of samples in the context </returns>
         public int NSamples
         {
@@ -937,7 +1042,7 @@ namespace Bio.VCF
         /// <exception cref="IllegalArgumentException"> if sampleName isn't bound to a genotype </exception>
         public GenotypesContext GetGenotypes(string sampleName)
         {
-            return getGenotypes(new List<string>() { sampleName });
+            return GetGenotypes(new List<string>() { sampleName });
         }
 
         /// <summary>
@@ -949,7 +1054,7 @@ namespace Bio.VCF
         /// <param name="sampleNames"> a unique list of sample names </param>
         /// <returns> subsetting genotypes context </returns>
         /// <exception cref="IllegalArgumentException"> if sampleName isn't bound to a genotype </exception>
-        protected internal GenotypesContext getGenotypes(ICollection<string> sampleNames)
+        protected internal GenotypesContext GetGenotypes(ICollection<string> sampleNames)
         {
             return Genotypes.subsetToSamples(new HashSet<string>(sampleNames));
         }
@@ -1049,7 +1154,7 @@ namespace Bio.VCF
             GenotypesContext genotypes = sampleIds.Count == 0 ? Genotypes : GetGenotypes(sampleIds);
             foreach (Genotype g in genotypes)
             {
-                n += g.countAllele(a);
+                n += g.CountAlleles(a);
             }
             return n;
         }
@@ -1123,7 +1228,7 @@ namespace Bio.VCF
             get
             {
                 calculateGenotypeCounts();
-                return genotypeCounts[(int)GenotypeType.HOM_REF];
+                return genotypeCounts[(int)GenotypeType.HOMOZYGOUS_REF];
             }
         }
 
@@ -1136,7 +1241,7 @@ namespace Bio.VCF
             get
             {
                 calculateGenotypeCounts();
-                return genotypeCounts[(int)GenotypeType.HET];
+                return genotypeCounts[(int)GenotypeType.HETEROZYGOUS];
             }
         }
 
@@ -1149,7 +1254,7 @@ namespace Bio.VCF
             get
             {
                 calculateGenotypeCounts();
-                return genotypeCounts[(int)GenotypeType.HOM_VAR];
+                return genotypeCounts[(int)GenotypeType.HOMOZYGOUS_ALT];
             }
         }
 
@@ -1166,11 +1271,10 @@ namespace Bio.VCF
             }
         }
 
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // validation: the normal validation routines are called automatically upon creation of the VC
-        //
-        // ---------------------------------------------------------------------------------------------------------
+        #endregion Genotype Methods
+
+        #region Validation Methods -- the normal validation routines are called automatically upon creation of the VC
+
         private void validate(Validation validationToPerform)
         {
             validateStop();
@@ -1323,11 +1427,11 @@ namespace Bio.VCF
 
             return alleleList;
         }
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // Fully decode
-        //
-        // ---------------------------------------------------------------------------------------------------------
+
+        #endregion Validation Methods
+
+        #region Full Decoding Methods
+
         /// <summary>
         /// Return a VC equivalent to this one but where all fields are fully decoded
         /// 
@@ -1472,7 +1576,9 @@ namespace Bio.VCF
                     }
                 }
             }
+#pragma warning disable 0168
             catch (FormatException e)
+#pragma warning restore 0168
             {
                 throw new VCFParsingError("Could not decode field " + field + " with value " + str + " of declared type " + format.Type);
             }
@@ -1496,57 +1602,7 @@ namespace Bio.VCF
             return g2.Make();
         }
 
-        public bool HasSymbolicAlleles()
-        {
-            return HasSymbolicAlleles(Alleles);
-        }
+        #endregion Full Decoding Methods
 
-        public static bool HasSymbolicAlleles(IList<Allele> alleles)
-        {
-            return alleles.Any(x => x.Symbolic);
-        }
-
-        public Allele AltAlleleWithHighestAlleleCount
-        {
-            get
-            {
-                // optimization: for bi-allelic sites, just return the 1only alt allele
-                if (Biallelic)
-                {
-                    return GetAlternateAllele(0);
-                }
-                return AlternateAlleles.MaxBy(a => GetCalledChrCount(a));
-            }
-        }
-
-        /// <summary>
-        /// Lookup the index of allele in this variant context
-        /// </summary>
-        /// <param name="allele"> the allele whose index we want to get </param>
-        /// <returns> the index of the allele into getAlleles(), or -1 if it cannot be found </returns>
-        public int GetAlleleIndex(Allele allele)
-        {
-            return Alleles.IndexOf(allele);
-        }
-
-        /// <summary>
-        /// Return the allele index #getAlleleIndex for each allele in alleles
-        /// </summary>
-        /// <param name="alleles"> the alleles we want to look up </param>
-        /// <returns> a list of indices for each allele, in order </returns>
-        public IList<int> GetAlleleIndices(ICollection<Allele> alleles)
-        {
-            return alleles.Select(x => GetAlleleIndex(x)).ToList();
-        }
-
-        public int[] GetGLIndecesOfAlternateAllele(Allele targetAllele)
-        {
-            int index = GetAlleleIndex(targetAllele);
-            if (index == -1)
-            {
-                throw new System.ArgumentException("Allele " + targetAllele + " not in this VariantContex " + this);
-            }
-            return GenotypeLikelihoods.getPLIndecesOfAlleles(0, index);
-        }
     }
 }

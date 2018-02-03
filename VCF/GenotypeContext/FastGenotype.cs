@@ -47,6 +47,9 @@ namespace Bio.VCF
     /// </summary>
     public sealed class FastGenotype : Genotype
     {
+
+        #region Private Fields
+
         private readonly ReadOnlyCollection<Allele> alleles;
         private readonly bool isPhased;
         private readonly int GQ_Renamed;
@@ -54,6 +57,10 @@ namespace Bio.VCF
         private readonly int[] AD_Renamed;
         private readonly int[] PL_Renamed;
         private readonly Dictionary<string, object> extendedAttributes;
+
+        #endregion Private Fields
+
+        #region Constructors
 
         /// <summary>
         /// The only way to make one of these, for use by GenotypeBuilder only
@@ -66,7 +73,7 @@ namespace Bio.VCF
         /// <param name="AD"> </param>
         /// <param name="PL"> </param>
         /// <param name="extendedAttributes"> </param>
-        protected internal FastGenotype(string sampleName, List<Allele> alleles, bool isPhased, int GQ, int DP, int[] AD, int[] PL, string filters, Dictionary<string, object> extendedAttributes) : base(sampleName, filters)
+        public FastGenotype(string sampleName, List<Allele> alleles, bool isPhased, int GQ, int DP, int[] AD, int[] PL, string filters, Dictionary<string, object> extendedAttributes) : base(sampleName, filters)
         {
             this.alleles = alleles.AsReadOnly();
             this.isPhased = isPhased;
@@ -76,6 +83,7 @@ namespace Bio.VCF
             this.PL_Renamed = PL;
             this.extendedAttributes = extendedAttributes;
         }
+
         /// <summary>
         /// The only way to make one of these, for use by GenotypeBuilder only
         /// </summary>
@@ -87,7 +95,7 @@ namespace Bio.VCF
         /// <param name="AD"> </param>
         /// <param name="PL"> </param>
         /// <param name="extendedAttributes"> </param>
-        protected internal FastGenotype(string sampleName, ReadOnlyCollection<Allele> alleles, bool isPhased, int GQ, int DP, int[] AD, int[] PL, string filters, Dictionary<string, object> extendedAttributes)
+        public FastGenotype(string sampleName, ReadOnlyCollection<Allele> alleles, bool isPhased, int GQ, int DP, int[] AD, int[] PL, string filters, Dictionary<string, object> extendedAttributes)
             : base(sampleName, filters)
         {
             this.alleles = alleles;
@@ -99,12 +107,9 @@ namespace Bio.VCF
             this.extendedAttributes = extendedAttributes;
         }
 
+        #endregion Constructors
 
-        // ---------------------------------------------------------------------------------------------------------
-        //
-        // Implmenting the abstract methods
-        //
-        // ---------------------------------------------------------------------------------------------------------
+        #region Implmenting the abstract methods and properties
 
         public override IList<Allele> Alleles
         {
@@ -114,7 +119,7 @@ namespace Bio.VCF
             }
         }
 
-        public override Allele getAllele(int i)
+        public override Allele GetAllele(int i)
         {
             return alleles[i];
         }
@@ -159,12 +164,6 @@ namespace Bio.VCF
             }
         }
 
-        // ---------------------------------------------------------------------------------------------------------
-        // 
-        // get routines for extended attributes
-        //
-        // ---------------------------------------------------------------------------------------------------------
-
         public override IDictionary<string, object> ExtendedAttributes
         {
             get
@@ -173,23 +172,7 @@ namespace Bio.VCF
             }
         }
 
-        /// <summary>
-        /// Is values a valid AD or PL field </summary>
-        /// <param name="values">
-        /// @return </param>
-        private static bool validADorPLField(int[] values)
-        {
-            if (values != null)
-            {
-                foreach (int v in values)
-                {
-                    if (v < 0)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
+        #endregion Implmenting the abstract methods and properties
+
     }
 }

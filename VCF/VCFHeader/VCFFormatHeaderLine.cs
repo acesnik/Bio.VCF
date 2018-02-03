@@ -1,3 +1,4 @@
+using System;
 
 namespace Bio.VCF
 {
@@ -14,7 +15,7 @@ namespace Bio.VCF
         {
             if (type == VCFHeaderLineType.Flag)
             {
-                throw new System.ArgumentException("Flag is an unsupported type for format fields");
+                throw new ArgumentException("Flag is an unsupported type for format fields");
             }
         }
 

@@ -7,13 +7,24 @@ namespace Bio.VCF
 {
     public class GenotypeLikelihoods
     {
+
+        #region Static Fields
+
         private const int NUM_LIKELIHOODS_CACHE_N_ALLELES = 5;
         private const int NUM_LIKELIHOODS_CACHE_PLOIDY = 10;
         // caching numAlleles up to 5 and ploidy up to 10
         private static readonly int[][] numLikelihoodCache = GeneralUtils.ReturnRectangularIntArray(NUM_LIKELIHOODS_CACHE_N_ALLELES, NUM_LIKELIHOODS_CACHE_PLOIDY);
         public static readonly int MAX_PL = short.MaxValue;
 
-        //
+        /// <summary>
+        /// The maximum number of alleles that we can represent as genotype likelihoods
+        /// </summary>
+        public const int MAX_ALT_ALLELES_THAT_CAN_BE_GENOTYPED = 50;
+
+        #endregion Static Fields
+
+        #region Private Fields
+
         // There are two objects here because we are lazy in creating both representations
         // for this object: a vector of log10 Probs and the PL phred-scaled string.  Supports
         // having one set during initializating, and dynamic creation of the other, if needed
@@ -21,6 +32,9 @@ namespace Bio.VCF
         private double[] log10Likelihoods = null;
         private string likelihoodsAsString_PLs = null;
 
+        #endregion Private Fields
+
+        #region Constructor
 
         /// <summary>
         /// initialize num likelihoods cache
@@ -37,38 +51,6 @@ namespace Bio.VCF
             }
         }
 
-        /// <summary>
-        /// The maximum number of alleles that we can represent as genotype likelihoods
-        /// </summary>
-        public const int MAX_ALT_ALLELES_THAT_CAN_BE_GENOTYPED = 50;
-
-        /*
-		* a cache of the PL index to the 2 alleles it represents over all possible numbers of alternate alleles
-		*/
-        private static readonly GenotypeLikelihoodsAllelePair[] PLIndexToAlleleIndex = calculatePLcache(MAX_ALT_ALLELES_THAT_CAN_BE_GENOTYPED);
-
-        public static GenotypeLikelihoods fromPLField(string PLs)
-        {
-            return new GenotypeLikelihoods(PLs);
-        }
-
-        [Obsolete]
-        public static GenotypeLikelihoods fromGLField(string GLs)
-        {
-            return new GenotypeLikelihoods(parseDeprecatedGLString(GLs));
-        }
-
-        public static GenotypeLikelihoods fromLog10Likelihoods(double[] log10Likelihoods)
-        {
-            return new GenotypeLikelihoods(log10Likelihoods);
-        }
-
-        public static GenotypeLikelihoods fromPLs(int[] pls)
-        {
-            return new GenotypeLikelihoods(PLsToGLs(pls));
-        }
-
-        //
         // You must use the factory methods now
         //
         private GenotypeLikelihoods(string asString)
@@ -81,6 +63,35 @@ namespace Bio.VCF
             log10Likelihoods = asVector;
         }
 
+        #endregion Constructor
+
+        #region Static Factory Methods
+
+        public static GenotypeLikelihoods fromPLField(string PLs)
+        {
+            return new GenotypeLikelihoods(PLs);
+        }
+
+        [Obsolete]
+        public static GenotypeLikelihoods fromGLField(string GLs)
+        {
+            return new GenotypeLikelihoods(ParseDeprecatedGLString(GLs));
+        }
+
+        public static GenotypeLikelihoods fromLog10Likelihoods(double[] log10Likelihoods)
+        {
+            return new GenotypeLikelihoods(log10Likelihoods);
+        }
+
+        public static GenotypeLikelihoods fromPLs(int[] pls)
+        {
+            return new GenotypeLikelihoods(PLsToGLs(pls));
+        }
+
+        #endregion Static Factory Methods
+
+        #region Public Methods
+
         /// <summary>
         /// Returns the genotypes likelihoods in negative log10 vector format.  pr{AA} = x, this
         /// vector returns math.log10(x) for each of the genotypes.  Can return null if the
@@ -88,51 +99,37 @@ namespace Bio.VCF
         /// 
         /// @return
         /// </summary>
-        public double[] AsVector
+        public double[] AsVector()
         {
-            get
+            // assumes one of the likelihoods vector or the string isn't null
+            if (log10Likelihoods == null)
             {
-                // assumes one of the likelihoods vector or the string isn't null
-                if (log10Likelihoods == null)
-                {
-                    // make sure we create the GL string if it doesn't already exist
-                    log10Likelihoods = parsePLsIntoLikelihoods(likelihoodsAsString_PLs);
-                }
-
-                return log10Likelihoods;
+                // make sure we create the GL string if it doesn't already exist
+                log10Likelihoods = ParsePLsIntoLikelihoods(likelihoodsAsString_PLs);
             }
+
+            return log10Likelihoods;
         }
 
-        public int[] AsPLs
+        public int[] AsPLs()
         {
-            get
-            {
-                double[] GLs = AsVector;
-                return GLs == null ? null : GLsToPLs(GLs);
-            }
+            double[] GLs = AsVector();
+            return GLs == null ? null : GLsToPLs(GLs);
         }
 
         public override string ToString()
         {
-            return AsString;
-        }
-
-        public string AsString
-        {
-            get
+            if (likelihoodsAsString_PLs == null)
             {
-                if (likelihoodsAsString_PLs == null)
+                // todo -- should we accept null log10Likelihoods and set PLs as MISSING?
+                if (log10Likelihoods == null)
                 {
-                    // todo -- should we accept null log10Likelihoods and set PLs as MISSING?
-                    if (log10Likelihoods == null)
-                    {
-                        throw new VCFParsingError("BUG: Attempted to get likelihoods as strings and neither the vector nor the string is set!");
-                    }
-                    likelihoodsAsString_PLs = convertLikelihoodsToPLString(log10Likelihoods);
+                    throw new VCFParsingError("BUG: Attempted to get likelihoods as strings and neither the vector nor the string is set!");
                 }
-
-                return likelihoodsAsString_PLs;
+                likelihoodsAsString_PLs = convertLikelihoodsToPLString(log10Likelihoods);
             }
+
+            return likelihoodsAsString_PLs;
         }
 
         public override bool Equals(object aThat)
@@ -151,48 +148,52 @@ namespace Bio.VCF
 
             // now a proper field-by-field evaluation can be made.
             // GLs are considered equal if the corresponding PLs are equal
-            int[] me = AsPLs;
-            int[] other = that.AsPLs;
+            int[] me = AsPLs();
+            int[] other = that.AsPLs();
             return me.Length == other.Length && me.SequenceEqual(other);
         }
 
         //Return genotype likelihoods as an EnumMap with Genotypes as keys and likelihoods as values
         //Returns null in case of missing likelihoods
         //TODO: This seems to be making a strong diallelic site assumption, does not look safe
-        public Dictionary<GenotypeType, double> getAsMap(bool normalizeFromLog10)
+        public Dictionary<GenotypeType, double> GetAsMap(bool normalizeFromLog10)
         {
             //Make sure that the log10likelihoods are set
-            double[] likelihoods = normalizeFromLog10 ? GeneralUtils.normalizeFromLog10(AsVector) : AsVector;
+            double[] likelihoods = normalizeFromLog10 ? GeneralUtils.normalizeFromLog10(AsVector()) : AsVector();
             if (likelihoods == null)
             {
                 return null;
             }
             Dictionary<GenotypeType, double> likelihoodsMap = new Dictionary<GenotypeType, double>();
-            likelihoodsMap[GenotypeType.HOM_REF] = likelihoods[(int)GenotypeType.HOM_REF - 1];
-            likelihoodsMap[GenotypeType.HET] = likelihoods[(int)GenotypeType.HET - 1];
-            likelihoodsMap[GenotypeType.HOM_VAR] = likelihoods[(int)GenotypeType.HOM_VAR - 1];
+            likelihoodsMap[GenotypeType.HOMOZYGOUS_REF] = likelihoods[(int)GenotypeType.HOMOZYGOUS_REF - 1];
+            likelihoodsMap[GenotypeType.HETEROZYGOUS] = likelihoods[(int)GenotypeType.HETEROZYGOUS - 1];
+            likelihoodsMap[GenotypeType.HOMOZYGOUS_ALT] = likelihoods[(int)GenotypeType.HOMOZYGOUS_ALT - 1];
             return likelihoodsMap;
         }
 
-        private double getLog10GQ(IList<Allele> genotypeAlleles, IList<Allele> contextAlleles)
+        #endregion Public Methods
+
+        #region Log 10 Likelihood Calculations
+
+        private double GetLog10GQ(IList<Allele> genotypeAlleles, IList<Allele> contextAlleles)
         {
             int allele1Index = contextAlleles.IndexOf(genotypeAlleles[0]);
             int allele2Index = contextAlleles.IndexOf(genotypeAlleles[1]);
             int plIndex = calculatePLindex(allele1Index, allele2Index);
-            return getGQLog10FromLikelihoods(plIndex, AsVector);
+            return GetGQLog10FromLikelihoods(plIndex, AsVector());
         }
 
-        public double getLog10GQ(Genotype genotype, IList<Allele> vcAlleles)
+        public double GetLog10GQ(Genotype genotype, IList<Allele> vcAlleles)
         {
-            return getLog10GQ(genotype.Alleles, vcAlleles);
+            return GetLog10GQ(genotype.Alleles, vcAlleles);
         }
 
-        public double getLog10GQ(Genotype genotype, VariantContext context)
+        public double GetLog10GQ(Genotype genotype, VariantContext context)
         {
-            return getLog10GQ(genotype, context.Alleles);
+            return GetLog10GQ(genotype, context.Alleles);
         }
 
-        public static double getGQLog10FromLikelihoods(int iOfChoosenGenotype, double[] likelihoods)
+        public static double GetGQLog10FromLikelihoods(int iOfChoosenGenotype, double[] likelihoods)
         {
             if (likelihoods == null)
             {
@@ -230,7 +231,11 @@ namespace Bio.VCF
             }
         }
 
-        private static double[] parsePLsIntoLikelihoods(string likelihoodsAsString_PLs)
+        #endregion Log 10 Likelihood Calculations
+
+        #region Private Parser Methods
+
+        private static double[] ParsePLsIntoLikelihoods(string likelihoodsAsString_PLs)
         {
             if (!likelihoodsAsString_PLs.Equals(VCFConstants.MISSING_VALUE_v4))
             {
@@ -259,7 +264,7 @@ namespace Bio.VCF
         /// Back-compatibility function to read old style GL formatted genotype likelihoods in VCF format </summary>
         /// <param name="GLString">
         /// @return </param>
-        private static double[] parseDeprecatedGLString(string GLString)
+        private static double[] ParseDeprecatedGLString(string GLString)
         {
             if (!GLString.Equals(VCFConstants.MISSING_VALUE_v4))
             {
@@ -332,16 +337,19 @@ namespace Bio.VCF
             return likelihoodsAsVector;
         }
 
-        // -------------------------------------------------------------------------------------
-        //
-        // Static conversion utilities, going from GL/PL index to allele index and vice versa.
-        //
-        // -------------------------------------------------------------------------------------
+        #endregion Private Parser Methods
 
-        /*
-		* Class representing the 2 alleles (or rather their indexes into VariantContext.getAllele()) corresponding to a specific PL index.
-		* Note that the reference allele is always index=0.
-		*/
+        #region Static conversion utilities, going from GL/PL index to allele index and vice versa.
+
+        /// <summary>
+        /// a cache of the PL index to the 2 alleles it represents over all possible numbers of alternate alleles
+        /// </summary>
+        private static readonly GenotypeLikelihoodsAllelePair[] PLIndexToAlleleIndex = calculatePLcache(MAX_ALT_ALLELES_THAT_CAN_BE_GENOTYPED);
+
+        /// <summary>
+        /// Class representing the 2 alleles (or rather their indexes into VariantContext.getAllele()) corresponding to a specific PL index.
+		/// Note that the reference allele is always index = 0.
+        /// </summary>
         public class GenotypeLikelihoodsAllelePair
         {
             public readonly int alleleIndex1, alleleIndex2;
@@ -378,6 +386,8 @@ namespace Bio.VCF
 
             return cache;
         }
+
+        #endregion Static conversion utilities, going from GL/PL index to allele index and vice versa.
 
         // -------------------------------------------------------------------------------------
         //

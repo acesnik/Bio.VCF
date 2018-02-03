@@ -15,6 +15,7 @@ namespace Bio.VCF
     /// </summary>
     public class LazyGenotypesContext : GenotypesContext
     {
+
         private static readonly List<Genotype> EMPTY = new List<Genotype>(0);
         /// <summary>
         /// The parent codec, which will be used to parse the genotypes.
@@ -25,11 +26,13 @@ namespace Bio.VCF
         internal readonly IList<Allele> alleles;
         internal readonly string contig;
         internal readonly int start;
+
         /// <summary>
         /// nUnparsedGenotypes the number of genotypes contained in the unparsedGenotypes data
         /// (known already in the parser).  Useful for isEmpty and size() optimizations
         /// </summary>
         internal readonly int nUnparsedGenotypes;
+
         /// <summary>
         /// True if we've already decoded the values in unparsedGenotypeData
         /// </summary>
@@ -135,7 +138,7 @@ namespace Bio.VCF
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public LazyGenotypesContext.LazyData parse(string data)
+        public LazyData parse(string data)
         {
             return codec.CreateGenotypeMap(data, alleles, contig, start);
         }
@@ -206,7 +209,7 @@ namespace Bio.VCF
             }
         }
 
-        public int Count
+        public override int Count
         {
             get
             {

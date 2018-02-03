@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Bio.VCF
@@ -47,15 +48,15 @@ namespace Bio.VCF
         {
             if (name == null || genericFields == null || genericFields.Count == 0)
             {
-                throw new System.ArgumentException(string.Format("Invalid VCFSimpleHeaderLine: key={0} name={1}", base.Key, name));
+                throw new ArgumentException(string.Format("Invalid VCFSimpleHeaderLine: key={0} name={1}", base.Key, name));
             }
             if (name.Contains("<") || name.Contains(">"))
             {
-                throw new System.ArgumentException("VCFHeaderLine: ID cannot contain angle brackets");
+                throw new ArgumentException("VCFHeaderLine: ID cannot contain angle brackets");
             }
             if (name.Contains("="))
             {
-                throw new System.ArgumentException("VCFHeaderLine: ID cannot contain an equals sign");
+                throw new ArgumentException("VCFHeaderLine: ID cannot contain an equals sign");
             }
 
             this.name = name;

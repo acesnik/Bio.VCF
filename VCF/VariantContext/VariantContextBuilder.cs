@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Bio.VCF
@@ -101,7 +102,7 @@ namespace Bio.VCF
         {
             if (parent == null)
             {
-                throw new System.ArgumentException("BUG: VariantContextBuilder parent argument cannot be null in VariantContextBuilder");
+                throw new ArgumentException("BUG: VariantContextBuilder parent argument cannot be null in VariantContextBuilder");
             }
             this.alleles_Renamed = parent.alleles;
             this.attributes_Renamed = (IDictionary<string, object>)parent.Attributes;
@@ -121,7 +122,7 @@ namespace Bio.VCF
         {
             if (parent == null)
             {
-                throw new System.ArgumentException("BUG: VariantContext parent argument cannot be null in VariantContextBuilder");
+                throw new ArgumentException("BUG: VariantContext parent argument cannot be null in VariantContextBuilder");
             }
             this.alleles_Renamed = parent.alleles_Renamed;
             this.attributesCanBeModified = false;
@@ -318,7 +319,7 @@ namespace Bio.VCF
         /// <param name="genotypes"> </param>
         public void SetGenotypes(ICollection<Genotype> genotypes)
         {
-            this.SetGenotypes(GenotypesContext.copy(genotypes));
+            this.SetGenotypes(GenotypesContext.Copy(genotypes));
         }
 
         /// <summary>
@@ -326,7 +327,7 @@ namespace Bio.VCF
         /// <param name="genotypes"> </param>
         public void SetGenotypes(params Genotype[] genotypes)
         {
-            this.SetGenotypes(GenotypesContext.copy(genotypes));
+            this.SetGenotypes(GenotypesContext.Copy(genotypes));
         }
 
         /// <summary>

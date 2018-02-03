@@ -1,27 +1,32 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Bio.VCF
 {
 
-    //TODO: This class has the stench of java all over it, clean up later
     /// <summary>
     /// Represents an ordered collection of Genotype objects
     /// </summary>
     public class GenotypesContext : IList<Genotype>
     {
-        #region Static Members
+
+        #region Static Field
+
         /// <summary>
         /// static constant value for an empty GenotypesContext.  Useful since so many VariantContexts have no genotypes
         /// </summary>
         public static readonly GenotypesContext NO_GENOTYPES = new GenotypesContext(new List<Genotype>(0), new Dictionary<string, int>(0), new List<string>());
 
-        #region StaticFactoryMethods
+        #endregion Static Field
+
+        #region Public Static Factory Methods
+
         /// <summary>
         /// Basic creation routine </summary>
         /// <returns> an empty, mutable GenotypeContext </returns>
-        public static GenotypesContext create()
+        public static GenotypesContext Create()
         {
             return new GenotypesContext();
         }
@@ -29,7 +34,7 @@ namespace Bio.VCF
         /// <summary>
         /// Basic creation routine </summary>
         /// <returns> an empty, mutable GenotypeContext with initial capacity for nGenotypes </returns>
-        public static GenotypesContext create(int nGenotypes)
+        public static GenotypesContext Create(int nGenotypes)
         {
             return new GenotypesContext(nGenotypes);
         }
@@ -44,7 +49,7 @@ namespace Bio.VCF
         /// <param name="sampleNamesInOrder"> a list of sample names, one for each genotype in genotypes, sorted in alphabetical
         /// order. </param>
         /// <returns> an mutable GenotypeContext containing genotypes with already present lookup data </returns>
-        public static GenotypesContext create(List<Genotype> genotypes, IDictionary<string, int> sampleNameToOffset, IList<string> sampleNamesInOrder)
+        public static GenotypesContext Create(List<Genotype> genotypes, IDictionary<string, int> sampleNameToOffset, IList<string> sampleNamesInOrder)
         {
             return new GenotypesContext(genotypes, sampleNameToOffset, sampleNamesInOrder);
         }
@@ -54,7 +59,7 @@ namespace Bio.VCF
         /// </summary>
         /// <param name="genotypes"> our genotypes in arbitrary </param>
         /// <returns> an mutable GenotypeContext containing genotypes </returns>
-        public static GenotypesContext create(List<Genotype> genotypes)
+        public static GenotypesContext Create(List<Genotype> genotypes)
         {
             return genotypes == null ? NO_GENOTYPES : new GenotypesContext(genotypes);
         }
@@ -64,9 +69,9 @@ namespace Bio.VCF
         /// </summary>
         /// <param name="genotypes"> our genotypes in arbitrary </param>
         /// <returns> an mutable GenotypeContext containing genotypes </returns>
-        public static GenotypesContext create(params Genotype[] genotypes)
+        public static GenotypesContext Create(params Genotype[] genotypes)
         {
-            return create(new List<Genotype>(genotypes));
+            return Create(new List<Genotype>(genotypes));
         }
 
         /// <summary>
@@ -74,9 +79,9 @@ namespace Bio.VCF
         /// </summary>
         /// <param name="toCopy"> the GenotypesContext to copy </param>
         /// <returns> an mutable GenotypeContext containing genotypes </returns>
-        public static GenotypesContext copy(GenotypesContext toCopy)
+        public static GenotypesContext Copy(GenotypesContext toCopy)
         {
-            return create(new List<Genotype>(toCopy.Genotypes));
+            return Create(new List<Genotype>(toCopy.Genotypes));
         }
 
         /// <summary>
@@ -85,12 +90,14 @@ namespace Bio.VCF
         /// </summary>
         /// <param name="toCopy"> the collection of genotypes </param>
         /// <returns> an mutable GenotypeContext containing genotypes </returns>
-        public static GenotypesContext copy(ICollection<Genotype> toCopy)
+        public static GenotypesContext Copy(ICollection<Genotype> toCopy)
         {
-            return toCopy == null ? NO_GENOTYPES : create(new List<Genotype>(toCopy));
+            return toCopy == null ? NO_GENOTYPES : Create(new List<Genotype>(toCopy));
         }
-        #endregion
-        #endregion
+
+        #endregion Public Static Factory Methods
+
+        #region Private Fields
 
         /// <summary>
         /// sampleNamesInOrder a list of sample names, one for each genotype in genotypes, sorted in alphabetical order
@@ -113,18 +120,59 @@ namespace Bio.VCF
         /// </summary>
         internal List<Genotype> notToBeDirectlyAccessedGenotypes;
 
-        public bool Mutable { get; set; }
-
         /// <summary>
         /// Cached value of the maximum ploidy observed among all samples
         /// </summary>
         private int maxPloidy = -1;
 
-        // ---------------------------------------------------------------------------
-        //
-        // private constructors -- you have to use static create methods to make these classes
-        //
-        // ---------------------------------------------------------------------------
+        #endregion Private Fields
+
+        #region Public Properties
+
+        public bool Mutable
+        {
+            get; set;
+        }
+
+        public bool LazyWithData
+        {
+            get
+            {
+                return this is LazyGenotypesContext && ((LazyGenotypesContext)this).UnparsedGenotypeData != null;
+            }
+        }
+
+        public virtual int Count
+        {
+            get { return Genotypes.Count; }
+        }
+
+        public virtual bool Empty
+        {
+            get
+            {
+                return Genotypes.Count == 0;
+            }
+        }
+
+        protected virtual internal List<Genotype> Genotypes
+        {
+            get
+            {
+                return notToBeDirectlyAccessedGenotypes;
+            }
+            private set
+            {
+                CheckImmutability();
+                invalidateSampleNameMap();
+                invalidateSampleOrdering();
+                notToBeDirectlyAccessedGenotypes = value;
+            }
+        }
+
+        #endregion Public Properties
+
+        #region Private Constructors -- you have to use static create methods to make these classes
 
         /// <summary>
         /// Create an empty GenotypeContext
@@ -168,26 +216,19 @@ namespace Bio.VCF
             this.sampleNamesInOrder = sampleNamesInOrder;
         }
 
+        #endregion Private Constructors
 
-        // ---------------------------------------------------------------------------
-        //
-        // Mutability methods
-        //
-        // ---------------------------------------------------------------------------
+        #region Mutability methods
 
-        public void checkImmutability()
+        public void CheckImmutability()
         {
             if (!Mutable)
-            {
                 throw new Exception("GenotypeMap is currently immutable, but a mutator method was invoked on it");
-            }
         }
 
-        // ---------------------------------------------------------------------------
-        //
-        // caches
-        //
-        // ---------------------------------------------------------------------------
+        #endregion Mutability methods
+
+        #region Caches
 
         protected internal virtual void invalidateSampleNameMap()
         {
@@ -215,61 +256,9 @@ namespace Bio.VCF
             }
         }
 
-        // ---------------------------------------------------------------------------
-        //
-        // Lazy methods
-        //
-        // ---------------------------------------------------------------------------
-
-        public bool LazyWithData
-        {
-            get
-            {
-                return this is LazyGenotypesContext && ((LazyGenotypesContext)this).UnparsedGenotypeData != null;
-            }
-        }
-
-        // ---------------------------------------------------------------------------
-        //
-        // Map methods
-        //
-        // ---------------------------------------------------------------------------
-
-        protected virtual internal List<Genotype> Genotypes
-        {
-            get
-            {
-                return notToBeDirectlyAccessedGenotypes;
-            }
-            private set
-            {
-                checkImmutability();
-                invalidateSampleNameMap();
-                invalidateSampleOrdering();
-                notToBeDirectlyAccessedGenotypes = value;
-            }
-        }
-
-        public void Clear()
-        {
-            checkImmutability();
-            invalidateSampleNameMap();
-            invalidateSampleOrdering();
-            Genotypes.Clear();
-        }
-
-        public int Count
-        {
-            get { return Genotypes.Count; }
-        }
-
-        public virtual bool Empty
-        {
-            get
-            {
-                return Genotypes.Count == 0;
-            }
-        }
+        #endregion Caches
+    
+        #region Map Methods
 
         /// <summary>
         /// Adds a single genotype to this context.
@@ -296,7 +285,7 @@ namespace Bio.VCF
         /// @return </param>
         public void Add(Genotype genotype)
         {
-            checkImmutability();
+            CheckImmutability();
             invalidateSampleOrdering();
             if (sampleNameToOffset != null)
             {
@@ -315,7 +304,7 @@ namespace Bio.VCF
         /// <param name="genotypes">
         public void AddRange(IEnumerable<Genotype> genotypes)
         {
-            checkImmutability();
+            CheckImmutability();
             invalidateSampleOrdering();
             if (sampleNameToOffset != null)
             {
@@ -330,6 +319,189 @@ namespace Bio.VCF
             Genotypes.AddRange(genotypes);
         }
 
+        /// <summary>
+        /// Sets genotype at index to specified Genotype.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="genotype"></param>
+        /// <returns></returns>
+        public Genotype Set(int i, Genotype genotype)
+        {
+            CheckImmutability();
+            Genotype prev = Genotypes[i] = genotype;
+
+            invalidateSampleOrdering();
+            if (sampleNameToOffset != null)
+            {
+                // update the name map by removing the old entry and replacing it with the new one
+                sampleNameToOffset.Remove(prev.SampleName);
+                sampleNameToOffset[genotype.SampleName] = i;
+            }
+
+            return prev;
+        }
+
+        /// <summary>
+        /// Gets genotypes as an array instead of a list.
+        /// </summary>
+        /// <returns></returns>
+        public Genotype[] ToArray()
+        {
+            return Genotypes.ToArray();
+        }
+
+        /// <summary>
+        /// Iterate over the Genotypes in this context in the order specified by sampleNamesInOrder
+        /// </summary>
+        /// <param name="sampleNamesInOrder"> a Iterable of String, containing exactly one entry for each Genotype sample name in
+        /// this context </param>
+        /// <returns> a Iterable over the genotypes in this context. </returns>
+        public IEnumerable<Genotype> IterateInSampleNameOrder(IEnumerable<string> sampleNamesInOrder)
+        {
+            return sampleNamesInOrder.Select(x => Genotypes[sampleNameToOffset[x]]);
+        }
+        /// <summary>
+        /// Iterate over the Genotypes in this context in their sample name order (A, B, C)
+        /// regardless of the underlying order in the vector of genotypes </summary>
+        /// <returns> a Iterable over the genotypes in this context. </returns>
+        public IEnumerable<Genotype> IterateInSampleNameOrder()
+        {
+            return IterateInSampleNameOrder(SampleNamesOrderedByName);
+        }
+
+        /// <summary>
+        /// Note that remove requires us to invalidate our sample -> index
+        /// cache.  The loop:
+        /// 
+        /// GenotypesContext gc = ...
+        /// for ( sample in samples )
+        ///   if ( gc.containsSample(sample) )
+        ///     gc.remove(sample)
+        /// 
+        /// is extremely inefficient, as each call to remove invalidates the cache
+        /// and containsSample requires us to rebuild it, an O(n) operation.
+        /// 
+        /// If you must remove many samples from the GC, use either removeAll or retainAll
+        /// to avoid this O(n * m) operation.
+        /// </summary>
+        /// <param name="i">
+        /// @return </param>
+        public void RemoveAt(int i)
+        {
+            CheckImmutability();
+            invalidateSampleNameMap();
+            invalidateSampleOrdering();
+            Genotypes.RemoveAt(i);
+        }
+
+        public void RemoveAll(IEnumerable<Genotype> objects)
+        {
+            CheckImmutability();
+            invalidateSampleNameMap();
+            invalidateSampleOrdering();
+            bool toRet = true;
+            foreach (var o in objects)
+            {
+                toRet = toRet & Genotypes.Remove(o);
+            }
+            if (!toRet)
+                throw new ArgumentException("Tried to remove genotype from context that was not in the collection");
+        }
+
+        public void RetainAll(IEnumerable<Genotype> typesToKeep)
+        {
+            CheckImmutability();
+            invalidateSampleNameMap();
+            invalidateSampleOrdering();
+            notToBeDirectlyAccessedGenotypes = notToBeDirectlyAccessedGenotypes.Where(x => typesToKeep.Contains(x)).ToList();
+        }
+
+        public int IndexOf(Genotype item)
+        {
+            return Genotypes.IndexOf(item);
+        }
+
+        public void Insert(int index, Genotype item)
+        {
+            Set(index, item);
+        }
+
+        public Genotype this[int index]
+        {
+            get
+            {
+                return Genotypes[index];
+            }
+            set
+            {
+                Set(index, value);
+            }
+        }
+
+
+        /// <summary>
+        /// Gets sample associated with this sampleName, or null if none is found
+        /// </summary>
+        /// <param name="sampleName">
+        public Genotype this[string sampleName]
+        {
+            get
+            {
+                int? offset = getSampleIndex(sampleName);
+                var toR = offset.HasValue ? Genotypes[offset.Value] : null;
+                return toR;
+            }
+        }
+        public bool Contains(Genotype item)
+        {
+            return Genotypes.Contains(item);
+        }
+
+        public void CopyTo(Genotype[] array, int arrayIndex)
+        {
+            Genotypes.CopyTo(array, arrayIndex);
+        }
+
+        public bool IsReadOnly
+        {
+            get { return !Mutable; }
+        }
+
+        public bool Remove(Genotype item)
+        {
+            CheckImmutability();
+            invalidateSampleNameMap();
+            invalidateSampleOrdering();
+            return Genotypes.Remove(item);
+        }
+
+        public IEnumerator<Genotype> GetEnumerator()
+        {
+            return Genotypes.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        Genotype Get(string sampleName)
+        {
+            int? offset = getSampleIndex(sampleName);
+            return offset.HasValue ? Genotypes[offset.Value] : null;
+        }
+
+        public void Clear()
+        {
+            CheckImmutability();
+            invalidateSampleNameMap();
+            invalidateSampleOrdering();
+            Genotypes.Clear();
+        }
+
+        #endregion Map Methods
+
+        #region Sample Names and Ploidy
 
         /// <summary>
         /// What is the max ploidy among all samples?  Returns defaultPloidy if no genotypes are present
@@ -340,7 +512,7 @@ namespace Bio.VCF
         {
             if (defaultPloidy < 0)
             {
-                throw new System.ArgumentException("defaultPloidy must be greater than or equal to 0");
+                throw new ArgumentException("defaultPloidy must be greater than or equal to 0");
             }
 
             if (maxPloidy == -1)
@@ -373,93 +545,6 @@ namespace Bio.VCF
             return ret;
         }
 
-
-        /// <summary>
-        /// Note that remove requires us to invalidate our sample -> index
-        /// cache.  The loop:
-        /// 
-        /// GenotypesContext gc = ...
-        /// for ( sample in samples )
-        ///   if ( gc.containsSample(sample) )
-        ///     gc.remove(sample)
-        /// 
-        /// is extremely inefficient, as each call to remove invalidates the cache
-        /// and containsSample requires us to rebuild it, an O(n) operation.
-        /// 
-        /// If you must remove many samples from the GC, use either removeAll or retainAll
-        /// to avoid this O(n * m) operation.
-        /// </summary>
-        /// <param name="i">
-        /// @return </param>
-        public void RemoveAt(int i)
-        {
-            checkImmutability();
-            invalidateSampleNameMap();
-            invalidateSampleOrdering();
-            Genotypes.RemoveAt(i);
-        }
-        public void RemoveAll(IEnumerable<Genotype> objects)
-        {
-            checkImmutability();
-            invalidateSampleNameMap();
-            invalidateSampleOrdering();
-            bool toRet = true;
-            foreach (var o in objects)
-            {
-                toRet = toRet & Genotypes.Remove(o);
-            }
-            if (!toRet)
-                throw new ArgumentException("Tried to remove genotype from context that was not in the collection");
-        }
-        public void retainAll(IEnumerable<Genotype> typesToKeep)
-        {
-            checkImmutability();
-            invalidateSampleNameMap();
-            invalidateSampleOrdering();
-            notToBeDirectlyAccessedGenotypes = notToBeDirectlyAccessedGenotypes.Where(x => typesToKeep.Contains(x)).ToList();
-
-        }
-        public Genotype Set(int i, Genotype genotype)
-        {
-            checkImmutability();
-            Genotype prev = Genotypes[i] = genotype;
-
-            invalidateSampleOrdering();
-            if (sampleNameToOffset != null)
-            {
-                // update the name map by removing the old entry and replacing it with the new one
-                sampleNameToOffset.Remove(prev.SampleName);
-                sampleNameToOffset[genotype.SampleName] = i;
-            }
-
-            return prev;
-        }
-
-        public Genotype[] ToArray()
-        {
-            return Genotypes.ToArray();
-        }
-
-
-        /// <summary>
-        /// Iterate over the Genotypes in this context in the order specified by sampleNamesInOrder
-        /// </summary>
-        /// <param name="sampleNamesInOrder"> a Iterable of String, containing exactly one entry for each Genotype sample name in
-        /// this context </param>
-        /// <returns> a Iterable over the genotypes in this context. </returns>
-        public IEnumerable<Genotype> IterateInSampleNameOrder(IEnumerable<string> sampleNamesInOrder)
-        {
-            return sampleNamesInOrder.Select(x => Genotypes[sampleNameToOffset[x]]);
-        }
-        /// <summary>
-        /// Iterate over the Genotypes in this context in their sample name order (A, B, C)
-        /// regardless of the underlying order in the vector of genotypes </summary>
-        /// <returns> a Iterable over the genotypes in this context. </returns>
-        public IEnumerable<Genotype> IterateInSampleNameOrder()
-        {
-            return IterateInSampleNameOrder(SampleNamesOrderedByName);
-        }
-
         /// <returns> The set of sample names for all genotypes in this context, in arbitrary order </returns>
         public ISet<string> SampleNames
         {
@@ -486,6 +571,7 @@ namespace Bio.VCF
             ensureSampleNameMap();
             return sampleNameToOffset.ContainsKey(sample);
         }
+
         public bool ContainsSamples(ICollection<string> samples)
         {
             return SampleNames.IsSupersetOf(samples);
@@ -508,7 +594,7 @@ namespace Bio.VCF
             }
             else // nGenotypes < nSamples
             {
-                GenotypesContext subset = create(samples.Count);
+                GenotypesContext subset = Create(samples.Count);
                 foreach (String sample in samples)
                 {
 
@@ -521,11 +607,11 @@ namespace Bio.VCF
                 return subset;
             }
         }
-        Genotype Get(string sampleName)
-        {
-            int? offset = getSampleIndex(sampleName);
-            return offset.HasValue ? Genotypes[offset.Value] : null;
-        }
+
+        #endregion Sample Names and Ploidy
+
+        #region ToString
+
         public override string ToString()
         {
             IList<string> gS = new List<string>();
@@ -535,71 +621,8 @@ namespace Bio.VCF
             }
             return "[" + String.Join(",", gS) + "]";
         }
-        public int IndexOf(Genotype item)
-        {
-            return Genotypes.IndexOf(item);
-        }
-        public void Insert(int index, Genotype item)
-        {
-            Set(index, item);
-        }
 
-        public Genotype this[int index]
-        {
-            get
-            {
-                return Genotypes[index];
-            }
-            set
-            {
-                Set(index, value);
-            }
-        }
+        #endregion ToString
 
-        /// <summary>
-        /// Gets sample associated with this sampleName, or null if none is found
-        /// </summary>
-        /// <param name="sampleName">
-
-        public Genotype this[string sampleName]
-        {
-            get
-            {
-                int? offset = getSampleIndex(sampleName);
-                var toR = offset.HasValue ? Genotypes[offset.Value] : null;
-                return toR;
-            }
-        }
-        public bool Contains(Genotype item)
-        {
-            return Genotypes.Contains(item);
-        }
-
-        public void CopyTo(Genotype[] array, int arrayIndex)
-        {
-            Genotypes.CopyTo(array, arrayIndex);
-        }
-        public bool IsReadOnly
-        {
-            get { return !Mutable; }
-        }
-
-        public bool Remove(Genotype item)
-        {
-            checkImmutability();
-            invalidateSampleNameMap();
-            invalidateSampleOrdering();
-            return Genotypes.Remove(item);
-        }
-        public IEnumerator<Genotype> GetEnumerator()
-        {
-            return Genotypes.GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
     }
-
 }
