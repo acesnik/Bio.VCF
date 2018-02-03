@@ -10,4 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A CSharp Parser for VCF Files</description>
   </metadata>
+  <files>
+      <file src="bin\Release\*.*" target="lib/net461" />
+  </files>
 </package>
