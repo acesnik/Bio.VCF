@@ -3,29 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestVCF", "TestVCF\TestVCF.csproj", "{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bio.VCF.ajc", "VCFCore\Bio.VCF.ajc.csproj", "{DD98F785-45F6-40C2-B747-ACE510EE13B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bio.VCF.ajc", "Bio.VCF.ajc.csproj", "{66F3F88E-3113-45A0-B98E-D1FA8940F207}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestVCF", "TestVCF\TestVCF.csproj", "{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Mono|Any CPU = Mono|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD98F785-45F6-40C2-B747-ACE510EE13B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD98F785-45F6-40C2-B747-ACE510EE13B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD98F785-45F6-40C2-B747-ACE510EE13B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD98F785-45F6-40C2-B747-ACE510EE13B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Mono|Any CPU.ActiveCfg = Release|Any CPU
-		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Mono|Any CPU.Build.0 = Release|Any CPU
 		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F52BBBBA-FC02-4D9B-AD55-C24C3E2D914B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66F3F88E-3113-45A0-B98E-D1FA8940F207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66F3F88E-3113-45A0-B98E-D1FA8940F207}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66F3F88E-3113-45A0-B98E-D1FA8940F207}.Mono|Any CPU.ActiveCfg = Release|Any CPU
-		{66F3F88E-3113-45A0-B98E-D1FA8940F207}.Mono|Any CPU.Build.0 = Release|Any CPU
-		{66F3F88E-3113-45A0-B98E-D1FA8940F207}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66F3F88E-3113-45A0-B98E-D1FA8940F207}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
