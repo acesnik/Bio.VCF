@@ -74,7 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VCFCore\Bio.VCF.ajc.csproj">
-      <Project>{dd98f785-45f6-40c2-b747-ace510ee13b0}</Project>
+      <Project>{8051dae1-afed-4e7f-8da2-fe6568245c9a}</Project>
       <Name>Bio.VCF.ajc</Name>
     </ProjectReference>
   </ItemGroup>
