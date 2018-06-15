@@ -5,30 +5,35 @@ namespace Bio.VCF
 {
     /// <summary>
     /// Builder class for VariantContext
-    /// 
+    ///
     /// Some basic assumptions here:
-    /// 
+    ///
     /// 1 -- data isn't protectively copied.  If you provide an attribute map to
     /// the build, and modify it later, the builder will see this and so will any
     /// resulting variant contexts.  It's best not to modify collections provided
     /// to a builder.
-    /// 
+    ///
     /// 2 -- the system uses the standard builder model, allowing the simple construction idiom:
-    /// 
+    ///
     ///   builder.source("a").genotypes(gc).id("x").make() => VariantContext
-    /// 
+    ///
     /// 3 -- The best way to copy a VariantContext is:
-    /// 
+    ///
     ///   new VariantContextBuilder(vc).make() => a copy of VC
-    /// 
+    ///
     /// 4 -- validation of arguments is done at the during the final make() call, so a
     /// VariantContextBuilder can exist in an inconsistent state as long as those issues
     /// are resolved before the call to make() is issued.
-    /// 
+    ///
     /// @author depristo
     /// </summary>
     public class VariantContextBuilder
     {
+        /// <summary>
+        /// VCF line encoding the variant
+        /// </summary>
+        public string Line { get; set; }
+
         /// <summary>
         /// An alias as well for chromosome
         /// </summary>
@@ -44,7 +49,7 @@ namespace Bio.VCF
         }
 
         /// <summary>
-        /// Tells us that the resulting VariantContext should have source field set to source 
+        /// Tells us that the resulting VariantContext should have source field set to source
         /// </summary>
         public string Source
         {
@@ -57,14 +62,18 @@ namespace Bio.VCF
         private ICollection<Allele> alleles_Renamed = null;
         private GenotypesContext genotypes_Renamed = GenotypesContext.NO_GENOTYPES;
         private ISet<string> filters_Renamed = null;
+
         //Nigel dictionary was originally string/object
         //TODO: See if I can avoid casting here by object->string
         private IDictionary<string, object> attributes_Renamed = null;
+
         private bool attributesCanBeModified = false;
+
         /// <summary>
         /// enum of what must be validated </summary>
         //NIGEL: Modify to use bit flags on these guys
         private VariantContext.Validation toValidate;
+
         //private readonly EnumSet<VariantContext.Validation> toValidate = EnumSet.noneOf(typeof(VariantContext.Validation));
         /// <summary>
         /// Create an empty VariantContextBuilder where all values adopt their default values.  Note that
@@ -179,7 +188,7 @@ namespace Bio.VCF
 
         /// <summary>
         /// Tells this builder to use this map of attributes alleles for the resulting VariantContext
-        /// 
+        ///
         /// Attributes can be null -> meaning there are no attributes.  After
         /// calling this routine the builder assumes it can modify the attributes
         /// object here, if subsequent calls are made to set attribute values </summary>
@@ -239,7 +248,7 @@ namespace Bio.VCF
 
         /// <summary>
         /// This builder's filters are set to this value
-        /// 
+        ///
         /// filters can be null -> meaning there are no filters </summary>
         /// <param name="filters"> </param>
         public void SetFilters(ISet<string> filters)
@@ -268,7 +277,7 @@ namespace Bio.VCF
 
         /// <summary>
         /// Tells this builder that the resulting VariantContext should have PASS filters
-        /// 
+        ///
         /// @return
         /// </summary>
         public void SetPassFilters()
@@ -283,7 +292,7 @@ namespace Bio.VCF
 
         /// <summary>
         /// Tells this builder that the resulting VariantContext be unfiltered
-        /// 
+        ///
         /// @return
         /// </summary>
         public void SetUnFiltered()
@@ -297,7 +306,7 @@ namespace Bio.VCF
 
         /// <summary>
         /// Tells this builder that the resulting VariantContext should use this genotypes GenotypeContext
-        /// 
+        ///
         /// Note that genotypes can be null -> meaning there are no genotypes
         /// </summary>
         /// <param name="genotypes"> </param>
@@ -313,7 +322,7 @@ namespace Bio.VCF
 
         /// <summary>
         /// Tells this builder that the resulting VariantContext should use a GenotypeContext containing genotypes
-        /// 
+        ///
         /// Note that genotypes can be null -> meaning there are no genotypes
         /// </summary>
         /// <param name="genotypes"> </param>
@@ -396,7 +405,7 @@ namespace Bio.VCF
 
         /// <summary>
         /// Compute the end position for this VariantContext from the alleles themselves
-        /// 
+        ///
         /// assigns this builder the stop position computed.
         /// </summary>
         /// <param name="alleles"> the list of alleles to consider.  The reference allele must be the first one </param>
@@ -411,7 +420,7 @@ namespace Bio.VCF
         }
 
         /// <returns> true if this builder contains fully decoded data
-        /// 
+        ///
         /// See VariantContext for more information </returns>
         public bool FullyDecoded
         {
@@ -424,18 +433,15 @@ namespace Bio.VCF
         /// a freshly allocated VariantContext with all of the builder data.  This
         /// VariantContext is validated as appropriate and if not failing QC (and
         /// throwing an exception) is returned.
-        /// 
+        ///
         /// Note that this function can be called multiple times to create multiple
         /// VariantContexts from the same builder.
         /// </summary>
         public VariantContext make()
         {
-            return new VariantContext(Source, ID, Contig, start_Renamed, stop_Renamed, alleles_Renamed, genotypes_Renamed, Log10PError, filters_Renamed, attributes_Renamed, FullyDecoded, toValidate);
+            return new VariantContext(Line, Source, ID, Contig, start_Renamed, stop_Renamed, alleles_Renamed, genotypes_Renamed, Log10PError, filters_Renamed, attributes_Renamed, FullyDecoded, toValidate);
         }
+
         //These methods seemed to possible introduce problems without returning value, so am skipping for now
-
-        #region MethodsNotPortedFromJava
-
-        #endregion
     }
 }

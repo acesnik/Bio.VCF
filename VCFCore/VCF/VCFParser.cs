@@ -6,17 +6,17 @@ using System.IO.Compression;
 
 namespace Bio.VCF
 {
-
     /// <summary>
     /// A Class to parse VCF Files
     /// </summary>
-    public class VCFParser : IDisposable, IEnumerable<VariantContext>, IEnumerator<VariantContext> 
+    public class VCFParser : IDisposable, IEnumerable<VariantContext>, IEnumerator<VariantContext>
     {
         private readonly VCFCodec vcfCodec = new VCFCodec();
         private readonly StreamReader reader;
         private string line = null;
         private VariantContext pCurrent;
         private string fileName;
+
         // TODO: Add a c'tor that reads intervals.
         public VCFParser(FileInfo vcfFile)
         {
@@ -46,25 +46,27 @@ namespace Bio.VCF
         {
             reader.Close();
         }
+
         public VCFHeader Header
         {
             get; private set;
         }
 
         #region IDisposable Members
-        // Track whether Dispose has been called. 
+
+        // Track whether Dispose has been called.
         private bool disposed = false;
 
-        // Implement IDisposable. 
+        // Implement IDisposable.
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        // If disposing equals false, the method has been called by the 
-        // runtime from inside the finalizer and you should not reference 
-        // other objects. Only unmanaged resources can be disposed. 
+        // If disposing equals false, the method has been called by the
+        // runtime from inside the finalizer and you should not reference
+        // other objects. Only unmanaged resources can be disposed.
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -78,11 +80,10 @@ namespace Bio.VCF
                     }
                 }
                 disposed = true;
-
             }
         }
 
-        #endregion
+        #endregion IDisposable Members
 
         #region IEnumerable<VariantContext> Members
 
@@ -94,7 +95,7 @@ namespace Bio.VCF
             }
         }
 
-        #endregion
+        #endregion IEnumerable<VariantContext> Members
 
         #region IEnumerable Members
 
@@ -103,7 +104,7 @@ namespace Bio.VCF
             return this.GetEnumerator();
         }
 
-        #endregion
+        #endregion IEnumerable Members
 
         #region IEnumerator<VariantContext> Members
 
@@ -115,7 +116,7 @@ namespace Bio.VCF
             }
         }
 
-        #endregion
+        #endregion IEnumerator<VariantContext> Members
 
         #region IEnumerator Members
 
@@ -123,13 +124,16 @@ namespace Bio.VCF
         {
             get { return pCurrent; }
         }
+
         public bool MoveNext()
         {
             try
             {
                 line = reader.ReadLine();
                 if (line == null)
+                {
                     return false;
+                }
                 else
                 {
                     pCurrent = vcfCodec.decode(line);
@@ -142,11 +146,12 @@ namespace Bio.VCF
                 throw new VCFParsingError("Error getting next VCF Line", e);
             }
         }
+
         public void Reset()
         {
             throw new NotImplementedException();
         }
-        #endregion
 
+        #endregion IEnumerator Members
     }
 }

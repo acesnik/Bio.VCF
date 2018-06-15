@@ -288,7 +288,7 @@ namespace Bio.VCF
             {
                 throw new VCFParsingError("Line " + lineNo + ": there aren't enough columns for line " + line + " (we expected " + (header == null ? NUM_STANDARD_FIELDS : NUM_STANDARD_FIELDS + 1) + " tokens, and saw " + parts.Length + " )");
             }
-            return parseVCFLine(parts, includeGenotypes);
+            return parseVCFLine(line, parts, includeGenotypes);
         }
 
         /// <summary>
@@ -297,9 +297,10 @@ namespace Bio.VCF
         /// <param name="parts">An array of length >8 where the 9th element contains unsplit genotype data (if present)</param>
         /// <param name="includeGenotypes"> Whether or not to also parse the genotype data </param>
         /// <returns></returns>
-        private VariantContext parseVCFLine(string[] parts, bool includeGenotypes)
+        private VariantContext parseVCFLine(string line, string[] parts, bool includeGenotypes)
         {
             VariantContextBuilder builder = new VariantContextBuilder();
+            builder.Line = line;
             builder.Source = Name;
             // increment the line count
             lineNo++;
@@ -336,8 +337,8 @@ namespace Bio.VCF
 
             string filterStr = GetCachedString(parts[6]);
             var filters = filterHash[filterStr];
-            if (filters != null)
-            {//means filter data present
+            if (filters != null) //means filter data present
+            {
                 builder.SetFilters(filters.Hash);
             }
 
@@ -351,9 +352,9 @@ namespace Bio.VCF
                 {
                     builder.Stop = Convert.ToInt32(attrs[VCFConstants.END_KEY].ToString());
                 }
-                #pragma warning disable 0168
+#pragma warning disable 0168
                 catch (Exception e)
-                #pragma warning restore 0168
+#pragma warning restore 0168
                 {
                     generateException("the END value in the INFO field is not valid");
                 }

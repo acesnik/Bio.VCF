@@ -5,7 +5,7 @@
     <version>0.0.1</version>
     <title>Bio.VCF.ajc</title>
     <authors>evolvedmicrobe</authors>
-    <owners>evolvedmicrobe</owners>
+    <owners>acesnik</owners>
     <projectUrl>https://github.com/acesnik/Bio.VCF</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A CSharp Parser for VCF Files</description>

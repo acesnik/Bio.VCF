@@ -10,7 +10,7 @@ namespace TestVCF
     public class VCFUnitTests
     {
         [Test]
-        public void test()
+        public void Test()
         {
             VCFParser parser = new VCFParser(Path.Combine(TestContext.CurrentContext.TestDirectory, @"testData", @"NA12878.knowledgebase.snapshot.20131119.b37.vcf.gz"));
             List<VariantContext> context = parser.Select(x => x).ToList();
